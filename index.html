@@ -1656,6 +1656,19 @@
       box-shadow: 5px 6px 0 rgba(8,39,51,.12);
     }
   
+    .offline-game-download::after { content: "↓"; }
+    .offline-game-note {
+      position: absolute;
+      z-index: 14;
+      left: 5.5%;
+      bottom: 7%;
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(10px, 1.2vw, 17px);
+      font-weight: 650;
+      line-height: 1.5;
+    }
+
     /* Mobile Safari: keep the 16:9 deck intact and guide portrait users to rotate. */
     body { -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
     .mobile-orientation {
@@ -1686,6 +1699,16 @@
     @media (orientation: landscape) and (max-height: 520px) {
       .deck-controls { bottom: max(1.6%, env(safe-area-inset-bottom)); }
       .fullscreen { right: max(2.2%, env(safe-area-inset-right)); }
+      .offline-game-download {
+        min-height: 36px;
+        gap: 8px;
+        padding: 7px 12px;
+        border-width: 2px;
+        box-shadow: 4px 5px 0 rgba(8, 39, 51, .18);
+        font-size: 12px;
+      }
+      .offline-game-download small { padding-left: 8px; font-size: 9px; }
+      .offline-game-download::after { width: 22px; height: 22px; font-size: 14px; }
     }
   </style>
 </head>
@@ -1803,6 +1826,10 @@
         <section class="slide static-source-slide" data-phase="I" aria-label="游戏：预测分类规则">
           <div class="edge-frame"></div>
           <img class="static-source-image" src="ORBIT-AI-L01-assets/classification-game-static.png" alt="关卡 1 至 6：预测分类规则">
+          <a class="game-launch-link offline-game-download" href="ORBIT-AI-L01-assets/sorting-game-offline.html" download="做出预测-离线互动版.html" aria-describedby="offlineGameNote">
+            <span>下载离线分类游戏</span><small>中英双语</small>
+          </a>
+          <p id="offlineGameNote" class="offline-game-note">下载后用电脑浏览器打开，即可离线游玩。</p>
           <span class="screen-id">007 · INTERACTION</span>
         </section>
 
