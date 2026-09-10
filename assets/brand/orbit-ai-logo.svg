@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">ORBIT AI preliminary orbital wordmark</title>
+  <desc id="desc">A circular orbital O with a central star and satellite, followed by RBIT AI.</desc>
+  <g transform="translate(48 38) rotate(-20 112 112)">
+    <circle cx="112" cy="112" r="96" fill="none" stroke="#F6F1DD" stroke-width="12"/>
+    <circle cx="112" cy="112" r="13" fill="#FFC857"/>
+    <circle cx="208" cy="112" r="20" fill="#F26B5E" stroke="#07142D" stroke-width="7"/>
+  </g>
+  <text x="302" y="208" fill="#F6F1DD" font-family="Space Mono, monospace" font-size="170" font-weight="700" letter-spacing="-12">RBIT</text>
+  <text x="830" y="208" fill="#68D8D6" font-family="Space Mono, monospace" font-size="170" font-weight="700" letter-spacing="-12">AI</text>
+</svg>

@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="ORBIT AI 第二课家长精选：从图灵的故事出发，认识信息安全与加密，思考怎样与 AI 分享信息。"><meta name="copyright" content="ORBIT AI"><title>ORBIT AI · 谁能读懂你的秘密？</title><link rel="icon" href="../../assets/brand/orbit-ai-emblem.svg"><style>
+    :root {
+      --ink: #082733;
+      --ink-soft: #435c63;
+      --paper: #f6f7f1;
+      --paper-warm: #fff7d7;
+      --teal: #00a887;
+      --teal-soft: #d9f2ed;
+      --cyan: #78d8e5;
+      --yellow: #ffc94d;
+      --coral: #f26b5e;
+      --navy: #0b303a;
+      --line: rgba(8, 39, 51, .11);
+      --shadow: 10px 12px 0 rgba(8, 39, 51, .12);
+      --sans: "Segoe UI", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      background:
+        radial-gradient(circle at 18% 18%, rgba(120, 216, 229, .13), transparent 28%),
+        radial-gradient(circle at 84% 78%, rgba(0, 168, 135, .12), transparent 30%),
+        #061e27;
+      color: var(--ink);
+      font-family: var(--sans);
+      user-select: none;
+    }
+
+    button, a { font: inherit; }
+    button { color: inherit; }
+
+    .deck-shell {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .deck {
+      position: relative;
+      width: min(100vw, calc(100vh * 16 / 9));
+      height: min(100vh, calc(100vw * 9 / 16));
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, .42);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      overflow: hidden;
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    .slide.active { display: block; }
+    .slide.dark {
+      color: #f7fbf8;
+      background-color: #082f39;
+      background-image:
+        linear-gradient(rgba(120, 216, 229, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120, 216, 229, .08) 1px, transparent 1px),
+        radial-gradient(circle at 74% 44%, rgba(0, 168, 135, .18), transparent 30%);
+    }
+
+    .edge-frame {
+      position: absolute;
+      inset: 2.15%;
+      border: 2px solid currentColor;
+      opacity: .13;
+      pointer-events: none;
+    }
+
+    .kicker {
+      margin: 0 0 1.25%;
+      color: var(--teal);
+      font-family: var(--mono);
+      font-size: clamp(12px, 1.05vw, 21px);
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .display {
+      margin: 0;
+      font-size: clamp(40px, 5.3vw, 102px);
+      line-height: .96;
+      letter-spacing: -.055em;
+      font-weight: 900;
+    }
+
+    .subhead {
+      margin: 1.5% 0 0;
+      color: var(--ink-soft);
+      font-size: clamp(18px, 1.55vw, 30px);
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .dark .subhead { color: rgba(247, 251, 248, .7); }
+
+    .phase-rail {
+      position: absolute;
+      z-index: 20;
+      top: 3.3%;
+      right: 4.25%;
+      display: flex;
+      align-items: center;
+      gap: .55vw;
+      transition: opacity .2s ease;
+    }
+
+    .phase-rail.hidden { opacity: 0; pointer-events: none; }
+
+    .phase-name {
+      margin-right: .55vw;
+      color: var(--ink-soft);
+      font-family: var(--mono);
+      font-size: clamp(10px, .78vw, 15px);
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .rail-node {
+      width: clamp(22px, 2.2vw, 42px);
+      height: clamp(22px, 2.2vw, 42px);
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(8, 39, 51, .25);
+      border-radius: 50%;
+      color: rgba(8, 39, 51, .55);
+      background: rgba(246, 247, 241, .72);
+      font-family: var(--mono);
+      font-size: clamp(10px, .78vw, 15px);
+      font-weight: 900;
+    }
+
+    .rail-node.active {
+      transform: translateY(-2px);
+      border-color: var(--ink);
+      color: var(--ink);
+      background: var(--yellow);
+      box-shadow: 3px 4px 0 rgba(8, 39, 51, .18);
+    }
+
+    .dark .phase-name { color: rgba(247, 251, 248, .66); }
+    .dark .rail-node {
+      border-color: rgba(247, 251, 248, .36);
+      color: rgba(247, 251, 248, .66);
+      background: rgba(8, 47, 57, .82);
+    }
+    .dark .rail-node.active { color: var(--ink); border-color: #fff; background: var(--yellow); }
+
+    .phase-rail.on-dark .phase-name { color: rgba(247, 251, 248, .66); }
+    .phase-rail.on-dark .rail-node {
+      border-color: rgba(247, 251, 248, .36);
+      color: rgba(247, 251, 248, .66);
+      background: rgba(8, 47, 57, .82);
+    }
+    .phase-rail.on-dark .rail-node.active {
+      color: var(--ink);
+      border-color: #fff;
+      background: var(--yellow);
+    }
+
+    .brand-cover {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .brand-cover::before,
+    .brand-cover::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 47%;
+      border: 2px solid rgba(120, 216, 229, .22);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-12deg);
+    }
+    .brand-cover::before { width: 67%; height: 58%; }
+    .brand-cover::after {
+      width: 49%;
+      height: 72%;
+      border-color: rgba(255, 201, 77, .16);
+      transform: translate(-50%, -50%) rotate(24deg);
+    }
+
+    .brand-cover-logo {
+      position: relative;
+      z-index: 3;
+      display: block;
+      width: min(760px, 53vw);
+      height: auto;
+    }
+
+    .brand-cover-node {
+      position: absolute;
+      z-index: 2;
+      width: clamp(12px, 1.25vw, 24px);
+      aspect-ratio: 1;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(255,255,255,.5);
+    }
+    .brand-cover-node.one { left: 23%; top: 29%; background: var(--yellow); }
+    .brand-cover-node.two { right: 22%; top: 24%; background: var(--coral); }
+    .brand-cover-node.three { right: 29%; bottom: 23%; background: var(--teal); }
+
+    .cover-inner {
+      position: absolute;
+      inset: 0;
+      padding: 9% 7.4% 6.5%;
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      align-items: center;
+      gap: 6%;
+    }
+
+    .cover-title small {
+      display: block;
+      margin-bottom: 2.2%;
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: clamp(12px, 1.05vw, 20px);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .brand-logo-cover {
+      display: block;
+      width: min(410px, 35vw);
+      max-width: 74%;
+      height: auto;
+      margin: 0 0 3.2%;
+    }
+
+    .cover-title h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(50px, 6.1vw, 118px);
+      line-height: .92;
+      letter-spacing: -.065em;
+      font-weight: 920;
+    }
+
+    .cover-title h1 span { color: var(--yellow); }
+
+    .cover-title p {
+      max-width: 700px;
+      margin: 4.5% 0 0;
+      color: rgba(247, 251, 248, .7);
+      font-size: clamp(17px, 1.45vw, 28px);
+      line-height: 1.55;
+    }
+
+    .lesson-english {
+      font-family: var(--mono);
+      font-size: clamp(14px, 1.15vw, 22px) !important;
+      font-weight: 850;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .orbit-map {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      max-width: 590px;
+      justify-self: end;
+    }
+
+    .orbit-ring {
+      position: absolute;
+      inset: 8%;
+      border: 3px solid rgba(120, 216, 229, .62);
+      border-radius: 50%;
+    }
+
+    .orbit-ring::before,
+    .orbit-ring::after {
+      content: "";
+      position: absolute;
+      border: 2px solid rgba(0, 168, 135, .72);
+      border-radius: 50%;
+    }
+    .orbit-ring::before { inset: 18%; }
+    .orbit-ring::after { inset: 35%; border-color: var(--yellow); }
+
+    .orbit-core {
+      position: absolute;
+      inset: 39%;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(255,255,255,.75);
+      border-radius: 50%;
+      background: rgba(255, 201, 77, .12);
+      color: var(--yellow);
+      font-family: var(--mono);
+      font-size: clamp(10px, 1vw, 18px);
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .orbit-tag {
+      position: absolute;
+      width: clamp(44px, 4.6vw, 86px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 3px solid #fff;
+      border-radius: 18px;
+      color: var(--ink);
+      background: var(--paper);
+      box-shadow: 6px 7px 0 rgba(0, 0, 0, .16);
+      font-family: var(--mono);
+      font-size: clamp(18px, 2vw, 38px);
+      font-weight: 950;
+    }
+    .orbit-tag:nth-of-type(3) { top: 1%; left: 42%; background: var(--yellow); }
+    .orbit-tag:nth-of-type(4) { top: 26%; right: 0; background: var(--cyan); }
+    .orbit-tag:nth-of-type(5) { right: 10%; bottom: 6%; background: var(--coral); }
+    .orbit-tag:nth-of-type(6) { left: 8%; bottom: 6%; background: var(--teal); color: #fff; }
+    .orbit-tag:nth-of-type(7) { top: 26%; left: 0; background: var(--paper-warm); }
+
+    .cover-footer {
+      position: absolute;
+      left: 7.4%;
+      bottom: 4.6%;
+      display: flex;
+      align-items: center;
+      gap: 1.4vw;
+      font-family: var(--mono);
+      font-size: clamp(10px, .8vw, 15px);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(247, 251, 248, .55);
+    }
+
+    .cover-footer::before {
+      content: "";
+      width: 5vw;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--yellow);
+    }
+
+    .video-layout {
+      position: absolute;
+      inset: 0;
+      padding: 6.7% 5.4% 5.4%;
+      display: grid;
+      grid-template-columns: 30% 1fr;
+      gap: 3.4%;
+      align-items: stretch;
+    }
+
+    .video-copy {
+      padding: 9% 4% 4% 3%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .brand-emblem-video {
+      display: block;
+      width: clamp(58px, 5.2vw, 92px);
+      height: auto;
+      margin: 0 0 9%;
+    }
+
+    .video-copy h2 {
+      margin: 0;
+      font-size: clamp(36px, 4.25vw, 82px);
+      line-height: .95;
+      letter-spacing: -.05em;
+    }
+
+    .video-copy p {
+      margin: 9% 0 0;
+      color: rgba(247, 251, 248, .72);
+      font-size: clamp(15px, 1.2vw, 24px);
+      line-height: 1.65;
+    }
+
+    .video-frame {
+      position: relative;
+      overflow: hidden;
+      align-self: center;
+      aspect-ratio: 16 / 9;
+      border: 3px solid rgba(247, 251, 248, .9);
+      border-radius: 28px;
+      background: #020c12;
+      box-shadow: 14px 16px 0 rgba(0, 0, 0, .24);
+    }
+
+    .video-frame video { width: 100%; height: 100%; display: block; object-fit: contain; }
+
+
+.deck{container-type:inline-size}.slide{background-size:2.25cqw 2.25cqw}body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}button,a{-webkit-user-select:none;user-select:none}h1,h2,h3,p,figure{margin:0}a{color:inherit}button{cursor:pointer}a:focus-visible,button:focus-visible{outline:3px solid var(--coral);outline-offset:5px}.slide:not(.active){display:none}.slide.active{display:block}.slide .edge-frame{border-width:.125cqw}.parent-page h1,.parent-page h2{font-size:4.6cqw;line-height:1.12;letter-spacing:-.055em;font-weight:900}.parent-page em{font-style:normal;color:var(--teal)}.dark.parent-page em{color:var(--yellow)}.parent-layout{position:absolute;inset:0;padding:7cqw 6.5cqw 7.2cqw;display:grid;grid-template-columns:1.1fr .9fr;gap:5.6cqw;align-items:center}.parent-copy{min-width:0}.parent-page .kicker{font-size:1.05cqw;line-height:1.5;letter-spacing:.07em;margin:0 0 1.5cqw}.dark .kicker{color:var(--yellow)}.parent-page .lead{font-size:1.85cqw;line-height:1.6;font-weight:700;color:var(--ink-soft);margin-top:1.65cqw}.parent-page .body-copy{font-size:1.25cqw;line-height:1.85;font-weight:550;color:var(--ink-soft);margin-top:1.2cqw}.dark.parent-page .lead{color:#f6f7f1}.dark.parent-page .body-copy{color:#c5dada}.lesson-stamp{font:750 .95cqw/1.5 var(--mono);color:var(--ink-soft);margin:0 0 1cqw;letter-spacing:.05em}.yellow-rule{width:11cqw;height:.5cqw;background:var(--yellow);transform:rotate(-1deg);margin:1.6cqw 0}.parent-content{position:absolute;inset:0;padding:6.2cqw 6.5cqw 7cqw}
+.story-layout{grid-template-columns:1.2fr .8fr}.turing-portrait{position:relative;height:37cqw;overflow:hidden;border:.2cqw solid var(--ink);border-radius:.7cqw;box-shadow:.8cqw .85cqw 0 #08273320;background:#c7d6d1}.turing-portrait>img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%;filter:grayscale(1)}.turing-portrait figcaption{position:absolute;left:0;right:0;bottom:0;background:#082733ed;color:var(--paper);padding:1.35cqw 1.4cqw}.turing-portrait figcaption span{display:block;font:750 1.2cqw/1.5 var(--mono);color:var(--yellow)}.turing-portrait figcaption b{font-size:1.05cqw;line-height:1.6;font-weight:550}.portrait-caption{position:absolute;top:1cqw;left:1cqw;background:var(--yellow);padding:.35cqw .7cqw;color:var(--ink);font-size:.95cqw;font-weight:800}
+.concept-layout{grid-template-columns:.78fr 1.22fr;gap:6cqw}.security-mark{display:flex;align-items:center;justify-content:center}.security-mark svg{width:27cqw;height:30cqw}.parent-page .english-word{font:900 4.65cqw/1.05 var(--sans);letter-spacing:-.04em}.phonetic{margin-top:1.25cqw;font-family:var(--sans);font-size:1.18cqw;line-height:1.5;color:var(--ink-soft)}.concept-cn{font-size:3.1cqw;line-height:1.35;font-weight:900;margin-top:1.35cqw}.concept-layout .lead{font-size:1.65cqw}
+.forms-layout{grid-template-columns:1.1fr .9fr}.forms-layout h2{font-size:3.8cqw}.forms-art{position:relative;padding:2.1cqw 1.7cqw;border:.18cqw solid var(--ink);background:var(--teal-soft);border-radius:1.3cqw;box-shadow:.7cqw .8cqw 0 #08273320}.input-samples{display:flex;gap:1.15cqw;justify-content:center}.input-sample{width:9.2cqw;text-align:center;padding:1cqw .4cqw;background:var(--paper);border:.15cqw solid var(--ink);border-radius:.65cqw;display:flex;flex-direction:column;align-items:center;gap:.6cqw}.input-sample>b{height:4.3cqw;font:800 3.3cqw/1.3 var(--serif)}.input-sample svg{display:block;width:5cqw;height:4.3cqw;fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.input-sample span{font-size:1.15cqw;font-weight:750}.data-converge{display:flex;justify-content:space-around;padding:.6cqw 0;color:var(--teal);font-size:2.2cqw}.data-paper{padding:1.1cqw .4cqw 1.3cqw;text-align:center;background:var(--ink);color:var(--paper);border-radius:.5cqw}.data-paper small{font-size:1cqw;color:#c2dbd7}.data-paper b{display:block;font:800 2.5cqw/1.7 var(--mono);color:var(--yellow)}.data-paper b span{color:var(--teal)}.data-paper p{font-size:1.08cqw}.forms-ai{margin-top:1.2cqw;font:900 2.8cqw/1.5 var(--mono);color:var(--ink);text-align:center}.forms-ai span{font:700 1.12cqw/1.5 var(--sans);margin-left:1cqw}.encoding-note{display:flex;gap:.65cqw;align-items:center;font-size:1.1cqw;margin-top:2cqw;padding:1cqw 0;border-top:.15cqw solid #08273330}.encoding-note b{font-weight:850}.encoding-note span{color:var(--ink-soft)}.encoding-note i{width:1px;height:1.3cqw;background:#08273345;margin:0 .5cqw}
+.transmission-page h2{font-size:3.75cqw}.parent-route{display:grid;grid-template-columns:1fr .16fr 1fr .16fr 1fr;gap:1.2cqw;align-items:center;margin-top:2.4cqw}.parent-route>div{padding:1.6cqw 1cqw;border:.2cqw solid var(--ink);border-radius:.9cqw;background:var(--teal-soft);text-align:center}.parent-route small{display:block;font-size:1.15cqw;font-weight:750}.parent-route b{display:block;font-size:1.8cqw;line-height:1.5;margin:1cqw 0;font-weight:850}.parent-route span{font-size:1.05cqw}.parent-route>p{color:var(--teal);font-size:2.3cqw;text-align:center}.parent-route .encrypted{background:var(--ink);color:var(--paper)}.parent-route .encrypted b{color:var(--yellow);letter-spacing:.15em}.privacy-facts{margin-top:2cqw;text-align:center}.privacy-facts>p:first-child{max-width:73cqw;margin:auto;font-size:1.15cqw;line-height:1.75;color:var(--ink-soft)}.privacy-facts>strong{display:block;font-size:1.85cqw;line-height:1.6;margin-top:1.2cqw;color:var(--teal)}.privacy-facts .trust-question{font-size:1.25cqw;line-height:1.6;margin-top:.3cqw;font-weight:750}
+.sharing-principles{margin-top:1.8cqw}.sharing-principles p{font-size:1.45cqw;line-height:2.2;font-weight:750}.sharing-principles span{color:var(--teal);font-family:var(--mono);font-size:1.05cqw;margin-right:1cqw}.sharing-art{position:relative;height:32cqw}.info-slip{position:absolute;width:23cqw;padding:1.4cqw;border:.2cqw solid var(--ink);border-radius:.6cqw;box-shadow:.45cqw .6cqw 0 #08273317}.info-slip small{display:block;font-size:.95cqw;line-height:1.5;margin-bottom:.6cqw}.info-slip b{display:block;font-size:1.9cqw;line-height:1.65}.info-slip.wanted{left:0;top:1cqw;background:var(--paper);transform:rotate(-9deg)}.info-slip.wanted i{display:block;width:70%;height:.13cqw;background:#08273335;margin:.8cqw 0}.info-slip.private{right:0;top:8cqw;transform:rotate(7deg);background:var(--paper-warm)}.info-slip.private b{font-size:1.55cqw}.sharing-envelope{position:absolute;width:32cqw;left:2cqw;bottom:0}
+.primary-link{display:inline-flex;align-items:center;justify-content:space-between;gap:3cqw;text-decoration:none;background:var(--yellow);color:var(--ink);border:.16cqw solid var(--ink);border-radius:2.5cqw;padding:1cqw 1.6cqw;font-size:1.3cqw;line-height:1.3;font-weight:850;margin-top:2.2cqw;box-shadow:.4cqw .5cqw 0 #00151b}.primary-link:hover{background:#ffdb80}.primary-link span{font-size:1.7cqw}.parent-page .download-note{font-size:1cqw;line-height:1.5;margin-top:.9cqw;color:#c5dada}.cipher-art{position:relative;aspect-ratio:1}.cipher-ring{position:absolute;border:.25cqw solid var(--cyan);border-radius:50%;inset:0}.cipher-ring.inner{inset:12%;border-style:dashed;opacity:.7}.cipher-char{position:absolute;font:800 2cqw/1 var(--mono);color:var(--cyan)}.c1{left:48%;top:4%}.c2{right:10%;top:25%}.c3{right:10%;bottom:25%}.c4{left:48%;bottom:4%}.c5{left:10%;bottom:25%}.c6{left:10%;top:25%}.cipher-core{position:absolute;inset:29%;border-radius:50%;background:var(--yellow);display:grid;place-items:center}.cipher-core svg{width:75%;height:75%;stroke:var(--ink);stroke-width:5;fill:none;stroke-linecap:round}.cipher-label{position:absolute;left:10%;right:10%;bottom:-3.8cqw;text-align:center;font-size:1.1cqw;letter-spacing:.1em;color:var(--cyan);font-weight:700}
+.parent-driving-art{background:var(--teal-soft);border:.25cqw solid var(--ink);border-radius:2.4cqw;box-shadow:.8cqw 1cqw 0 #08273320;padding:2cqw 1.5cqw}.parent-driving-art>svg{display:block;position:static;width:100%;height:auto}.driving-tags{display:flex;justify-content:space-between;gap:.8cqw;margin:.8cqw .6cqw 0}.driving-tags span{flex:1;text-align:center;background:var(--paper);border:.14cqw solid var(--ink);border-radius:2cqw;padding:.55cqw .4cqw;font-size:1.05cqw;font-weight:750}.parent-transfer .lesson-stamp{font-family:var(--sans)}
+.parent-homework .parent-layout{padding-top:7cqw;padding-bottom:9cqw;grid-template-columns:.86fr 1.14fr}.parent-homework h2{font-size:3.85cqw}.parent-homework .lead{font-size:1.55cqw}.homework-note{padding:2.4cqw;background:#fffdf5;border:.2cqw solid var(--ink);border-radius:1.3cqw;box-shadow:.7cqw .85cqw 0 #08273320}.note-label{color:var(--teal);font-size:1.05cqw;font-weight:800;border-bottom:.12cqw solid #08273335;padding-bottom:1cqw}.homework-note>div{position:relative;padding:1.4cqw 0 1.4cqw 3cqw}.homework-note>div+div{border-top:.12cqw solid #08273325}.homework-note>div span{position:absolute;left:0;top:1.6cqw;color:var(--teal);font:750 1.15cqw/1.4 var(--mono)}.homework-note h3{font-size:1.6cqw;line-height:1.5}.homework-note>div p{font-size:1.1cqw;line-height:1.6;margin-top:.4cqw;color:var(--ink-soft)}.homework-note footer{background:#ffc94d40;border-left:.3cqw solid var(--yellow);padding:.8cqw;font-size:1.05cqw;line-height:1.5;font-weight:700}.explore-note{position:absolute;left:6.5cqw;bottom:6.6cqw;font-size:.97cqw;line-height:1.5;color:var(--ink-soft)}
+.deck-controls{position:absolute;z-index:40;left:50%;bottom:1.9%;transform:translateX(-50%);display:flex;align-items:center;gap:.65cqw;padding:.4cqw;border:.13cqw solid #ffffffb0;border-radius:4cqw;background:#082733f5;color:white;box-shadow:0 .4cqw 1.1cqw #08273335}.deck-controls button{display:grid;place-items:center;border:1px solid #ffffff60;border-radius:50%;background:transparent;color:white;width:2.6cqw;height:2.6cqw;font-size:1.4cqw}.deck-controls button:hover{background:var(--teal)}.deck-controls button:disabled{opacity:.35;cursor:default}.slide-counter{min-width:5cqw;text-align:center;font:800 .85cqw/1.5 var(--mono)}.catalog-link,.copyright{position:absolute;bottom:2.9cqw;z-index:30;font:650 .75cqw/1.5 var(--mono);letter-spacing:.035em;color:var(--ink-soft)}.catalog-link{left:3.5cqw;text-decoration:none;display:flex;align-items:center;gap:.4cqw}.catalog-link:hover{text-decoration:underline}.copyright{right:3.5cqw}.deck.is-dark .catalog-link,.deck.is-dark .copyright{color:#c8dedb}.fullscreen{position:absolute;right:2.2%;top:3%;z-index:35;border:1px solid #08273345;background:#fffdf5;color:var(--ink);border-radius:50%;width:2.8cqw;height:2.8cqw;font-size:1.35cqw;display:grid;place-items:center}.phase-rail{top:3.3%;right:6.5%;gap:.6cqw}.phase-name{font-size:.73cqw}.rail-node{width:2.1cqw;height:2.1cqw;font-size:.8cqw;border-width:.15cqw}.brand-tagline{font-size:1.2cqw}.screen-id{display:none}.orientation-guide{display:none;position:fixed;inset:0;background:#061e27;color:var(--paper);z-index:1000;align-items:center;justify-content:center;text-align:center;padding:max(24px,env(safe-area-inset-top)) 24px;flex-direction:column;gap:20px}.orientation-guide img{width:min(70vw,360px);height:auto}.orientation-guide strong{font-size:28px;color:var(--yellow)}.orientation-guide p{font-size:16px;line-height:1.7}.orientation-guide a{font-size:14px;text-underline-offset:5px}.orientation-guide .rotate-phone{width:54px;height:82px;border:3px solid var(--cyan);border-radius:11px;transform:rotate(90deg);margin:10px}
+@supports(height:100svh){.deck{width:min(100vw,calc(100svh * 16 / 9));height:min(100svh,calc(100vw * 9 / 16))}}@media(orientation:portrait) and (max-width:900px){.orientation-guide{display:flex}.deck-shell{visibility:hidden}}@media(orientation:landscape) and (max-height:520px){.deck-controls{bottom:max(1.5%,env(safe-area-inset-bottom))}.deck-controls button{width:4cqw;height:4cqw;font-size:2cqw}.slide-counter{font-size:1.1cqw;min-width:6.5cqw}.fullscreen{width:3.8cqw;height:3.8cqw;font-size:2cqw}.catalog-link,.copyright{font-size:.9cqw}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+[hidden],.phase-rail.hidden{display:none!important}.deck.is-cover .catalog-link{top:3cqw;bottom:auto}.info-slip.private{top:4cqw}
+</style></head><body>
+<div class="orientation-guide" role="status"><img src="../../assets/brand/orbit-ai-logo.svg" alt="ORBIT AI"><div class="rotate-phone" aria-hidden="true"></div><strong>请横屏观看</strong><p>旋转手机，展开本课的故事。<br>左右轻扫即可翻页。</p><a href="../">返回课程目录</a></div>
+<main class="deck-shell" aria-label="ORBIT AI 第二课家长版"><div class="deck" id="deck"><div class="phase-rail" id="phaseRail" aria-label="ORBIT 学习轨道"><span class="phase-name" id="phaseName">ORBIT</span><span class="rail-node" data-letter="O">O</span><span class="rail-node" data-letter="R">R</span><span class="rail-node" data-letter="B">B</span><span class="rail-node" data-letter="I">I</span><span class="rail-node" data-letter="T">T</span></div><div id="slides"><section class="slide dark active" data-phase="cover" aria-label="ORBIT AI 通用封面">
+          <div class="edge-frame"></div>
+          <div class="brand-cover">
+            <span class="brand-cover-node one" aria-hidden="true"></span>
+            <span class="brand-cover-node two" aria-hidden="true"></span>
+            <span class="brand-cover-node three" aria-hidden="true"></span>
+            <img class="brand-cover-logo" src="../../assets/brand/orbit-ai-logo.svg" alt="ORBIT AI">
+          </div>
+          <div class="cover-footer">Enter with Wonder. Leave with Agency.</div>
+        </section>
+<section class="slide dark" data-phase="intro" aria-label="ORBIT 概念视频">
+          <div class="edge-frame"></div>
+          <div class="video-layout">
+            <div class="video-copy">
+              <img class="brand-emblem-video" src="../../assets/brand/orbit-ai-emblem.svg" alt="ORBIT AI 标志">
+              <p class="kicker">Before the lesson</p>
+              <h2>进入<br><span style="color:var(--yellow)">ORBIT</span><br>学习轨道</h2>
+
+            </div>
+            <div class="video-frame">
+              <video controls playsinline webkit-playsinline preload="none" poster="../../assets/media/orbit-intro.jpg">
+                <source src="../../assets/media/orbit-intro.mp4" type="video/mp4">
+                浏览器无法播放此视频，请直接打开原视频文件。
+              </video>
+            </div>
+          </div>
+          <span class="screen-id">002 · PRELUDE</span>
+        </section>
+<section class="slide parent-page story-page" data-phase="O" aria-label="故事：谁能读懂你的秘密">
+ <div class="edge-frame"></div><div class="parent-layout story-layout">
+  <div class="parent-copy"><p class="kicker">O · Open with a Story</p><p class="lesson-stamp">LESSON 02 / 信息安全与加密</p><h1>谁能读懂<br><em>你的秘密？</em></h1><p class="lead">一封加密电报，<br>可能关系着海上船队的行动。</p><p class="body-copy">图灵和伙伴们寻找破译的线索。<br>从这段故事出发，我们把问题带回今天：<br>使用 AI 时，谁会接触你发出的信息？</p></div>
+  <figure class="turing-portrait"><img src="assets/turing.jpg" alt="艾伦·图灵的历史照片" width="450" height="600"><figcaption><span>ALAN TURING</span><b>一个关于信息与信任的故事</b></figcaption><span class="portrait-caption">故事的起点</span></figure>
+ </div>
+</section>
+<section class="slide parent-page" data-phase="R" aria-label="核心概念：信息安全">
+ <div class="edge-frame"></div><div class="parent-layout concept-layout">
+  <div class="security-mark"><svg viewBox="0 0 200 200"><path d="M100 18L167 43V95Q167 148 100 181Q33 148 33 95V43Z" fill="#00a887" stroke="#082733" stroke-width="7"/><rect x="67" y="88" width="66" height="53" rx="9" fill="#ffc94d" stroke="#082733" stroke-width="6"/><path d="M80 88V71A20 20 0 0 1 120 71V88" fill="none" stroke="#082733" stroke-width="7"/><circle cx="100" cy="110" r="7" fill="#082733"/><path d="M100 114V126" stroke="#082733" stroke-width="5"/></svg></div>
+  <div class="parent-copy"><p class="kicker">R · Recognize the Concept</p><h2 class="english-word" lang="en">Information<br>Security</h2><p class="phonetic" lang="en-US">/ˌɪn.fɚˈmeɪ.ʃən səˈkjʊr.ə.t̬i/</p><h3 class="concept-cn">信息安全</h3><div class="yellow-rule"></div><p class="lead">保护不该透露的信息，<br>也尊重别人交给你的信息。</p><p class="body-copy">与 AI 交流，同样需要这样的判断。</p></div>
+ </div>
+</section>
+<section class="slide parent-page" data-phase="B" aria-label="原理：不同形式的信息，先成为数据">
+ <div class="edge-frame"></div><div class="parent-layout forms-layout">
+  <div class="parent-copy"><p class="kicker">B · Break Down the Principle</p><h2>信息不同，<br><em>都要先成为数据。</em></h2><p class="lead">文字、图片、声音……<br>都可能成为给 AI 的输入。</p><p class="body-copy">先按规则表示成计算机能处理的数据，<br>模型才能进一步处理这些信息。</p><div class="encoding-note"><b>编码</b><span>表示信息</span><i></i><b>加密</b><span>保护信息</span></div></div>
+  <div class="forms-art" role="img" aria-label="文字、图片、声音三种信息，汇入数据表示，再供 AI 处理。"><div class="input-samples"><div class="input-sample"><b>Aa</b><span>文字</span></div><div class="input-sample"><svg viewBox="0 0 90 70" aria-hidden="true"><rect x="5" y="5" width="80" height="60" rx="7"/><circle cx="65" cy="22" r="8"/><path d="m12 56 23-26 15 16 10-9 19 19"/></svg><span>图片</span></div><div class="input-sample"><svg viewBox="0 0 90 70" aria-hidden="true"><path d="M10 29v12m12-26v40m12-32v24m12-42v60m12-45v30m12-20v10m12-16v22"/></svg><span>声音</span></div></div><div class="data-converge"><span>↓</span><span>↓</span><span>↓</span></div><div class="data-paper"><small>按规则表示</small><b>01001<span> · </span>10110</b><p>计算机可以处理的数据</p></div><div class="forms-ai">AI <span>进一步处理</span></div></div>
+ </div>
+</section>
+<section class="slide parent-page transmission-page" data-phase="B" aria-label="信息安全：加密保护传输，接收方仍能处理内容">
+ <div class="edge-frame"></div><div class="parent-content"><p class="kicker">B · Break Down the Principle</p><h2>加密保护传输，<br><em>接收方仍会处理内容。</em></h2><div class="parent-route"><div><small>你的设备</small><b>发出的信息</b><span>原来的内容</span></div><p aria-hidden="true">→</p><div class="encrypted"><small>网络传输中</small><b>··· ▣ ···</b><span>加密保护</span></div><p aria-hidden="true">→</p><div><small>提供 AI 的公司</small><b>接收并处理</b><span>生成回答</span></div></div><div class="privacy-facts"><p>工作人员也可能在规定情况下查看内容。输入还可能被保存，用于训练或改进服务；具体规则取决于产品、账号与设置。</p><strong>不能无条件信任任何一家 AI 公司。</strong><p class="trust-question">使用前要先想清楚：这些信息适合交出去吗？</p></div></div>
+</section>
+<section class="slide parent-page" data-phase="B" aria-label="信息安全：发送之前，先选一次">
+ <div class="edge-frame"></div><div class="parent-layout sharing-layout"><div class="parent-copy"><p class="kicker">B · Break Down the Principle</p><h2>发送之前，<br><em>先选一次。</em></h2><p class="lead">一张图片、一段录音，<br>可能带上比任务更多的信息。</p><div class="sharing-principles"><p><span>01</span>这次任务真的需要吗？</p><p><span>02</span>有没有自己或别人的隐私？</p><p><span>03</span>涉及别人，得到允许了吗？</p></div></div><div class="sharing-art" aria-hidden="true"><div class="info-slip wanted"><small>这次需要的内容</small><b>一道题目</b><i></i><i></i></div><div class="info-slip private"><small>还可能带上的信息</small><b>地址 · 姓名</b><b>旁边人的谈话</b></div><svg class="sharing-envelope" viewBox="0 0 420 240"><rect x="5" y="5" width="410" height="225" rx="16" fill="#d9f2ed" stroke="#082733" stroke-width="5"/><path d="m10 12 200 133L410 12M10 224l137-119m126 0 137 119" fill="none" stroke="#082733" stroke-width="5"/><circle cx="210" cy="145" r="29" fill="#ffc94d" stroke="#082733" stroke-width="4"/><path d="m197 145 9 9 18-19" fill="none" stroke="#082733" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+</section>
+<section class="slide dark parent-page game-page" data-phase="I" aria-label="互动：秘密电报局，下载独立密码游戏">
+ <div class="edge-frame"></div><div class="parent-layout"><div class="parent-copy"><p class="kicker">I · Interact through Play</p><h2>秘密电报局</h2><p class="lead">一封密信，<br>一套共同的规则。</p><p class="body-copy">在发送和破译之间，<br>体验规则怎样改变信息的呈现，<br>又怎样帮助我们读懂信息。</p><a class="primary-link" href="assets/cipher-game-offline.html" download="ORBIT-AI-L02-密码游戏.html" target="_blank" rel="noopener">下载独立游戏 <span aria-hidden="true">↓</span></a><p class="download-note">保存 HTML 文件后，可在浏览器中离线打开。</p></div><div class="cipher-art" aria-hidden="true"><div class="cipher-ring outer"></div><div class="cipher-ring inner"></div><span class="cipher-char c1">A</span><span class="cipher-char c2">B</span><span class="cipher-char c3">C</span><span class="cipher-char c4">D</span><span class="cipher-char c5">E</span><span class="cipher-char c6">F</span><div class="cipher-core"><svg viewBox="0 0 100 80"><rect x="25" y="32" width="50" height="40" rx="8"/><path d="M35 32V20a15 15 0 0 1 30 0v12"/><circle cx="50" cy="48" r="5"/><path d="M50 53v7"/></svg></div><span class="cipher-label">同一信息 · 不同呈现</span></div></div>
+</section>
+<section class="slide parent-page parent-transfer" data-phase="T" aria-label="体验：视觉神经网络">
+ <div class="edge-frame"></div><div class="parent-layout"><div class="parent-copy"><p class="kicker">T · Transfer into Experience</p><p class="lesson-stamp">回到第一课的自动驾驶问题</p><h2>视觉<br><em>神经网络</em></h2><p class="lead">从许多例子中学习，<br>再处理新的画面。</p><p class="body-copy">通过一次路口观察，认识画面中的线索<br>如何参与车辆对路况的判断。</p></div><div class="parent-driving-art"><svg aria-hidden="true" viewBox="0 0 360 295">
+        <path d="M12 247H343" fill="none" stroke="#082733" stroke-width="6" stroke-linecap="round"/>
+        <path d="M139 272h42m23 0h42m23 0h42" fill="none" stroke="#08273335" stroke-width="5" stroke-linecap="round"/>
+        <path d="M292 117v130" fill="none" stroke="#082733" stroke-width="10" stroke-linecap="round"/>
+        <rect x="266" y="9" width="53" height="112" rx="17" fill="#082733"/>
+        <circle cx="292.5" cy="33" r="11" fill="#48646b"/>
+        <circle cx="292.5" cy="64" r="11" fill="#48646b"/>
+        <circle cx="292.5" cy="95" r="12" fill="#00a887" stroke="#fffdf5" stroke-width="3"/>
+        <g fill="none" stroke="#00a887" stroke-width="4" stroke-linecap="round"><path d="m331 92 11-1m-18-14 8-6m-8 40 8 6"/></g>
+        <g stroke="#082733" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="68" y="213" width="30" height="33" rx="10" fill="#082733"/>
+          <rect x="204" y="213" width="30" height="33" rx="10" fill="#082733"/>
+          <path d="m63 164 15-53q4-14 22-14h104q18 0 22 14l15 53 14 17v32q0 14-14 14H63q-14 0-14-14v-32Z" fill="#ffc94d"/>
+          <path d="m84 155 11-39h115l11 39Z" fill="#78d8e5"/>
+          <path d="M105 127h32m-33 10h15" fill="none" stroke="#fffdf5" stroke-width="5"/>
+          <path d="M53 160H41v-18h24m177 18h17v-18h-21" fill="#fffdf5"/>
+          <rect x="66" y="180" width="35" height="21" rx="8" fill="#fffdf5"/>
+          <rect x="203" y="180" width="35" height="21" rx="8" fill="#fffdf5"/>
+          <path d="M122 199h59" fill="none"/>
+          <path d="M139 96V84h26v12" fill="#fffdf5"/>
+          <rect x="132" y="73" width="40" height="15" rx="7" fill="#082733"/>
+        </g>
+      </svg><div class="driving-tags"><span>观察</span><span>学习</span><span>判断</span></div></div></div>
+</section>
+<section class="slide parent-page parent-homework" data-phase="wrap" aria-label="课外作业：找一个 AI 犯错的故事">
+ <div class="edge-frame"></div><div class="parent-layout"><div class="parent-copy"><p class="kicker">课外作业</p><h2>找一个<br><em>AI 犯错</em><br>的故事。</h2><p class="lead">可以讲自己的经历，<br>也可以采访父母。</p><div class="yellow-rule"></div><p class="body-copy">下次课，讲给大家听。</p></div><article class="homework-note"><p class="note-label">带回一个故事</p><div><span>01</span><h3>当时想让 AI 做什么？</h3></div><div><span>02</span><h3>它哪里做错了？</h3><p>你是怎么发现的？</p></div><div><span>03</span><h3>你猜可能是什么原因？</h3><p>可以有几种猜测，也可以说“还不知道”。</p></div><footer>先讲清楚经过，再说自己的猜测。</footer></article></div><p class="explore-note">延伸探索：搜索《模仿游戏》的破译片段，也了解真实的图灵故事。</p>
+</section>
+</div><nav class="deck-controls" aria-label="课件翻页"><button id="prev" aria-label="上一页">‹</button><span id="counter" class="slide-counter"></span><button id="next" aria-label="下一页">›</button></nav><button class="fullscreen" id="fullscreen" aria-label="全屏观看">⛶</button><a class="catalog-link" href="../">← 课程目录</a><small class="copyright">© ORBIT AI · 家庭阅读</small></div></main><script>(()=>{
+ 'use strict';
+ const slides=[...document.querySelectorAll('.slide')],deck=document.getElementById('deck'),prev=document.getElementById('prev'),next=document.getElementById('next'),counter=document.getElementById('counter'),rail=document.getElementById('phaseRail');let index=0;
+ const phaseNames={cover:'ORBIT',intro:'ORBIT',O:'Open with a Story',R:'Recognize the Concept',B:'Break Down the Principle',I:'Interact through Play',T:'Transfer into Experience',wrap:'ORBIT'};
+ function show(n,updateHash=true){index=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>{s.classList.toggle('active',i===index);s.setAttribute('aria-hidden',String(i!==index));if(i!==index)s.querySelectorAll('video,audio').forEach(m=>m.pause());});const current=slides[index],dark=current.classList.contains('dark');deck.classList.toggle('is-dark',dark);deck.classList.toggle('is-cover',current.dataset.phase==='cover');rail.classList.toggle('hidden',current.dataset.phase==='cover');rail.classList.toggle('on-dark',dark);document.getElementById('phaseName').textContent=phaseNames[current.dataset.phase]||'ORBIT';rail.querySelectorAll('[data-letter]').forEach(n=>n.classList.toggle('active',n.dataset.letter===current.dataset.phase));counter.textContent=String(index+1).padStart(2,'0')+' / '+slides.length;prev.disabled=index===0;next.disabled=index===slides.length-1;if(updateHash)history.replaceState(null,'','#slide-'+(index+1));}
+ prev.addEventListener('click',()=>show(index-1));next.addEventListener('click',()=>show(index+1));document.addEventListener('keydown',e=>{if(e.target.closest?.('video,a,button,input,textarea'))return;if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(index+1);}else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(index-1);}else if(e.key==='Home')show(0);else if(e.key==='End')show(slides.length-1);});
+ function fromHash(){const m=location.hash.match(/^#slide-(\d+)$/);show(m?Number(m[1])-1:0,false);}window.addEventListener('hashchange',fromHash);
+ let touch=null;document.getElementById('slides').addEventListener('touchstart',e=>{if(e.target.closest('video,a,button,input,textarea')){touch=null;return;}const t=e.changedTouches[0];touch={x:t.clientX,y:t.clientY};},{passive:true});document.getElementById('slides').addEventListener('touchend',e=>{if(!touch)return;const t=e.changedTouches[0],dx=t.clientX-touch.x,dy=t.clientY-touch.y;touch=null;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.3)show(index+(dx<0?1:-1));},{passive:true});
+ const fullscreen=document.getElementById('fullscreen');if(!document.documentElement.requestFullscreen)fullscreen.hidden=true;fullscreen.addEventListener('click',()=>{const p=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();p?.catch?.(()=>{});});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)document.querySelectorAll('video,audio').forEach(m=>m.pause());});['copy','cut','contextmenu','selectstart'].forEach(type=>document.addEventListener(type,e=>{if(!e.target.closest?.('input,textarea,[contenteditable="true"]'))e.preventDefault();}));fromHash();
+})();
+</script></body></html>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <title id="title">ORBIT AI orbital O emblem</title>
+  <desc id="desc">A clean orbital O containing a central learning star and an outward-moving satellite.</desc>
+  <g transform="translate(48 48) rotate(-20 112 112)">
+    <circle cx="112" cy="112" r="96" fill="none" stroke="#F6F1DD" stroke-width="12"/>
+    <circle cx="112" cy="112" r="13" fill="#FFC857"/>
+    <circle cx="208" cy="112" r="20" fill="#F26B5E" stroke="#07142D" stroke-width="7"/>
+  </g>
+</svg>
