@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>青蛙的一生 · 2026-09-18</title>
+  <meta name="author" content="陈艺菡 / 柯忻妤 / 庄胤亨 / 彭森" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow: hidden;
+    }
+    body.h-screen {
+      height: 100vh;
+      height: 100dvh;
+    }
+    .stage-btn { min-width: 0; }
+    .stage-btn .truncate { max-width: 100%; }
+    .glass-card {
+      background: rgba(8, 28, 22, 0.78);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(52, 211, 153, 0.22);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+    }
+    .glass-btn {
+      background: rgba(6, 78, 59, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      transition: all 0.2s ease;
+    }
+    .glass-btn:hover {
+      background: rgba(5, 150, 105, 0.8);
+      border-color: rgba(167, 243, 208, 0.6);
+      transform: translateY(-1px);
+    }
+    .glass-btn:active {
+      transform: translateY(1px);
+    }
+    .stage-pill-active {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.45), rgba(5, 150, 105, 0.75));
+      border: 1px solid rgba(110, 231, 183, 0.85);
+      box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-emerald-100 h-screen w-screen relative flex flex-col justify-between select-none">
+
+  <div class="absolute inset-0 z-0">
+    <canvas id="pondCanvas" class="w-full h-full block cursor-pointer"></canvas>
+  </div>
+
+  <header class="relative z-10 w-full max-w-3xl mx-auto px-4 pt-3 sm:pt-4 pointer-events-none">
+    <div class="glass-card rounded-2xl p-3 sm:p-4 text-center pointer-events-auto transition-all duration-300">
+      <div class="flex items-center justify-between gap-2 border-b border-emerald-500/20 pb-2 mb-2">
+        <div class="flex items-center gap-2">
+          <span id="stageBadge" class="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-950 border border-emerald-400/40 text-emerald-300">
+            阶段 1 / 5
+          </span>
+          <h1 id="stageTitle" class="text-sm sm:text-lg font-bold text-emerald-200 flex items-center gap-1.5">
+            受精卵团 · 栖息于水草丛
+          </h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="soundBtn" class="glass-btn px-2.5 py-1 rounded-lg text-xs flex items-center gap-1 text-emerald-300" title="声音开关">
+            <span id="soundIcon">🔊</span>
+            <span id="soundText" class="hidden sm:inline">音效开</span>
+          </button>
+        </div>
+      </div>
+      <p id="stageDesc" class="text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
+        春水回暖，母蛙在左下角茂密的水草隐蔽处产下胶质卵团。透明胶囊保温聚热，深色胚胎在内部进行卵裂发育。
+      </p>
+      <div class="mt-2 flex items-center justify-center gap-2 text-[11px] sm:text-xs text-emerald-300/80">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="interactionPrompt">轻触左下角水草中的蛙卵加速孵化 · 点击水面激起涟漪</span>
+      </div>
+    </div>
+  </header>
+
+  <footer class="relative z-10 w-full max-w-4xl mx-auto px-3 pb-3 sm:pb-4 pointer-events-none">
+    <div class="glass-card rounded-2xl p-2.5 sm:p-3 pointer-events-auto shadow-2xl flex flex-col gap-2.5">
+      <!-- Stage Nodes Indicator -->
+      <div class="grid grid-cols-5 gap-1.5 sm:gap-2">
+        <button class="stage-btn stage-pill-active py-1.5 sm:py-2 px-1 rounded-xl text-center text-xs font-medium transition-all flex flex-col sm:flex-row items-center justify-center gap-1" data-stage="0">
+          <span class="text-sm">🥚</span>
+          <span class="truncate">1. 受精卵</span>
+        </button>
+        <button class="stage-btn py-1.5 sm:py-2 px-1 rounded-xl text-center text-xs font-medium text-emerald-300/70 hover:text-white glass-btn transition-all flex flex-col sm:flex-row items-center justify-center gap-1" data-stage="1">
+          <span class="text-sm">🐟</span>
+          <span class="truncate">2. 外鳃蝌蚪</span>
+        </button>
+        <button class="stage-btn py-1.5 sm:py-2 px-1 rounded-xl text-center text-xs font-medium text-emerald-300/70 hover:text-white glass-btn transition-all flex flex-col sm:flex-row items-center justify-center gap-1" data-stage="2">
+          <span class="text-sm">🦎</span>
+          <span class="truncate">3. 长出后肢</span>
+        </button>
+        <button class="stage-btn py-1.5 sm:py-2 px-1 rounded-xl text-center text-xs font-medium text-emerald-300/70 hover:text-white glass-btn transition-all flex flex-col sm:flex-row items-center justify-center gap-1" data-stage="3">
+          <span class="text-sm">🐊</span>
+          <span class="truncate">4. 幼蛙退尾</span>
+        </button>
+        <button class="stage-btn py-1.5 sm:py-2 px-1 rounded-xl text-center text-xs font-medium text-emerald-300/70 hover:text-white glass-btn transition-all flex flex-col sm:flex-row items-center justify-center gap-1" data-stage="4">
+          <span class="text-sm">🐸</span>
+          <span class="truncate">5. 完全成蛙</span>
+        </button>
+      </div>
+
+      <!-- Action & Playback Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-emerald-500/15 text-xs">
+        <div class="flex items-center gap-1.5">
+          <button id="primaryActionBtn" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold shadow-md shadow-emerald-500/20 active:scale-95 transition-all flex items-center gap-1">
+            <span id="primaryActionIcon">🐣</span>
+            <span id="primaryActionText">促使卵团孵化</span>
+          </button>
+          <button id="restartBtn" class="glass-btn px-2.5 py-1.5 rounded-xl text-emerald-300" title="重置本阶段状态">
+            🔄 重置
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1 sm:gap-2">
+          <button id="prevBtn" class="glass-btn w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-xs" title="上一阶段">◀</button>
+          <button id="autoCycleBtn" class="glass-btn px-2.5 py-1.5 rounded-xl flex items-center gap-1 text-emerald-200" title="开启生命周期全流程巡航演化">
+            <span id="autoIcon">▶</span>
+            <span id="autoText">自动演化</span>
+          </button>
+          <button id="nextBtn" class="glass-btn w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-xs" title="下一阶段">▶</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    ['copy', 'cut'].forEach(type => document.addEventListener(type, e => e.preventDefault()));
+    class SynthesizedPondAudio {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      // Realistic frog croak with formants & throat vibrato
+      playCroak() {
+        if (this.muted) return;
+        this.init();
+        try {
+          const now = this.ctx.currentTime;
+          const osc1 = this.ctx.createOscillator();
+          const osc2 = this.ctx.createOscillator();
+          const lfo = this.ctx.createOscillator();
+          const lfoGain = this.ctx.createGain();
+          const filter = this.ctx.createBiquadFilter();
+          const masterGain = this.ctx.createGain();
+
+          osc1.type = 'sawtooth';
+          osc2.type = 'triangle';
+          osc1.frequency.setValueAtTime(118, now);
+          osc2.frequency.setValueAtTime(126, now);
+
+          // LFO simulates throat tremolo
+          lfo.frequency.setValueAtTime(28, now);
+          lfoGain.gain.setValueAtTime(32, now);
+          lfo.connect(osc1.frequency);
+
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(460, now);
+          filter.Q.setValueAtTime(4.2, now);
+
+          masterGain.gain.setValueAtTime(0.001, now);
+          masterGain.gain.linearRampToValueAtTime(0.28, now + 0.04);
+          masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
+
+          osc1.connect(filter);
+          osc2.connect(filter);
+          filter.connect(masterGain);
+          masterGain.connect(this.ctx.destination);
+
+          lfo.start(now);
+          osc1.start(now);
+          osc2.start(now);
+          lfo.stop(now + 0.36);
+          osc1.stop(now + 0.36);
+          osc2.stop(now + 0.36);
+        } catch(e) {}
+      }
+      // Clear water drop droplet ripple
+      playWaterDrop() {
+        if (this.muted) return;
+        this.init();
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(480 + Math.random() * 120, now);
+          osc.frequency.exponentialRampToValueAtTime(920 + Math.random() * 200, now + 0.12);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.16);
+        } catch(e) {}
+      }
+      // Sharp snap for frog's fast elastic tongue catching prey
+      playTongueSnap() {
+        if (this.muted) return;
+        this.init();
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(750, now);
+          osc.frequency.exponentialRampToValueAtTime(110, now + 0.08);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        } catch(e) {}
+      }
+      // Gentle soft hatch pop
+      playPop() {
+        if (this.muted) return;
+        this.init();
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(60, now + 0.12);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.13);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.14);
+        } catch(e) {}
+      }
+    }
+    const audio = new SynthesizedPondAudio();
+
+    const canvas = document.getElementById('pondCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = 0;
+    let height = 0;
+    let dpr = window.devicePixelRatio || 1;
+
+    let currentStage = 0;
+    let autoCycling = false;
+    let autoCycleTimer = 0;
+    const STAGE_INTERVAL = 12; // Seconds per stage in auto-evolution
+    let globalTime = 0;
+
+    const STAGE_INFO = [
+      {
+        badge: "阶段 1 / 5",
+        title: "受精卵团 · 栖息于水草丛 (Frogspawn)",
+        desc: "春水回暖，受精卵团被产在左下角茂密的水草隐蔽处。每颗卵包裹在透明胶质膜中，能起到一定的保护作用。深色微小胚胎在卵中央持续进行细胞分裂。",
+        prompt: "轻触左下角水草中的蛙卵加速孵化 · 点击水面激起涟漪",
+        actionText: "加速卵团孵化",
+        actionIcon: "🐣"
+      },
+      {
+        badge: "阶段 2 / 5",
+        title: "初生蝌蚪 · 羽状外鳃游动 (Early Tadpole)",
+        desc: "卵群破膜孵化！初生蝌蚪头侧生有精巧的羽状外鳃，直接从水流中吸取溶解氧。修长扁平的尾鳍借助肌节波浪式摆动在池塘中穿梭，刮食微藻与浮游生物碎屑。",
+        prompt: "点击水面投喂水藻引导蝌蚪游弋 · 观察外鳃微动",
+        actionText: "投喂新鲜绿藻",
+        actionIcon: "🌿"
+      },
+      {
+        badge: "阶段 3 / 5",
+        title: "长肢蝌蚪 · 后肢发育强健 (Tadpole with Limbs)",
+        desc: "在甲状腺素驱动下，后肢率先长出并逐渐发育！前肢芽在鳃室内悄悄孕育，双眼凸起具有开阔视野。游泳姿态逐渐由单一摆尾演进为后肢协调蹬水推进。",
+        prompt: "点击水面激起水浪激发蹬腿加速游动",
+        actionText: "刺激后肢蹬水",
+        actionIcon: "🦵"
+      },
+      {
+        badge: "阶段 4 / 5",
+        title: "幼蛙变态 · 细胞自噬缩尾 (Froglet)",
+        desc: "关键飞跃！四肢健全的小幼蛙开始奋力爬上右侧荷叶。长尾巴通过程序性细胞凋亡（Apoptosis）被自身逐步吸收转化为生长养分，肺部正式接管呼吸大任。",
+        prompt: "点击荷叶辅助小幼蛙登岸适应两栖生活",
+        actionText: "助力登岸荷叶",
+        actionIcon: "🍃"
+      },
+      {
+        badge: "阶段 5 / 5",
+        title: "成熟成蛙 · 鸣囊呼应与弹舌捕虫 (Adult Frog)",
+        desc: "完全成熟的无尾两栖霸主！威坐于荷叶中心，喉部鸣囊鼓气共鸣发出宏亮蛙鸣。下颌倒生的长舌如弹簧般灵动，能在0.05秒内瞬间翻出击落空中飞掠的小飞虫！",
+        prompt: "点击空中投放飞虫，青蛙会自动捕捉附近的飞虫 · 点击青蛙让它跳跃",
+        actionText: "投放飞虫给青蛙",
+        actionIcon: "🦟"
+      }
+    ];
+
+    const ripples = [];
+    function addRipple(x, y, maxR = 65, intensity = 1.0) {
+      ripples.push({
+        x, y,
+        r: 6,
+        maxR,
+        alpha: 0.85 * intensity,
+        speed: 1.8 + Math.random() * 0.7
+      });
+      audio.playWaterDrop();
+    }
+
+    const bubbles = [];
+    for (let i = 0; i < 26; i++) {
+      bubbles.push({
+        x: Math.random(),
+        y: Math.random(),
+        r: 1.5 + Math.random() * 3,
+        speed: 0.15 + Math.random() * 0.3,
+        wobble: Math.random() * 5
+      });
+    }
+
+    const algaeList = [];
+    function spawnAlgae(count = 10) {
+      for (let i = 0; i < count; i++) {
+        algaeList.push({
+          x: width * (0.2 + Math.random() * 0.5),
+          y: height * (0.4 + Math.random() * 0.4),
+          r: 2.2 + Math.random() * 2.8,
+          vx: (Math.random() - 0.5) * 0.7,
+          vy: 0.2 + Math.random() * 0.4,
+          life: 260
+        });
+      }
+    }
+
+    const flies = [];
+    function spawnFly(x, y) {
+      flies.push({
+        x: x || width * (0.35 + Math.random() * 0.5),
+        y: y || height * (0.15 + Math.random() * 0.35),
+        vx: (Math.random() - 0.5) * 3,
+        vy: (Math.random() - 0.5) * 2,
+        wingPhase: Math.random() * 10,
+        alive: true
+      });
+    }
+
+    class FrogspawnSystem {
+      constructor() {
+        this.eggs = [];
+        this.hatchedLarvae = [];
+        this.init();
+      }
+      init() {
+        this.eggs = [];
+        this.hatchedLarvae = [];
+        const count = 16;
+        // Anchored specifically in the lower-left reeds (x: 18%, y: 76%)
+        const anchorX = width * 0.18;
+        const anchorY = height * 0.76;
+
+        for (let i = 0; i < count; i++) {
+          const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+          const dist = Math.random() * 45;
+          this.eggs.push({
+            relX: Math.cos(angle) * dist,
+            relY: Math.sin(angle) * (dist * 0.7),
+            r: 12 + Math.random() * 3.5,
+            embryoR: 4.8 + Math.random() * 1.2,
+            pulseSpeed: 1.8 + Math.random() * 1.5,
+            pulsePhase: Math.random() * Math.PI * 2,
+            hatched: false
+          });
+        }
+      }
+      triggerHatch() {
+        let unhatched = this.eggs.filter(e => !e.hatched);
+        if (unhatched.length === 0) {
+          this.init();
+          return;
+        }
+        const toHatch = Math.min(4, unhatched.length);
+        const anchorX = width * 0.18;
+        const anchorY = height * 0.76;
+
+        for (let i = 0; i < toHatch; i++) {
+          const e = unhatched[i];
+          e.hatched = true;
+          audio.playPop();
+          const spawnX = anchorX + e.relX;
+          const spawnY = anchorY + e.relY;
+          addRipple(spawnX, spawnY, 35, 0.6);
+
+          this.hatchedLarvae.push({
+            x: spawnX,
+            y: spawnY,
+            vx: 0.8 + Math.random() * 1.2,
+            vy: (Math.random() - 0.5) * 1.2,
+            tailPhase: Math.random() * 5
+          });
+        }
+      }
+      update(dt) {
+        this.hatchedLarvae.forEach(l => {
+          l.x += l.vx;
+          l.y += l.vy;
+          l.tailPhase += dt * 14;
+          if (l.x > width * 0.6 || l.x < width * 0.05) l.vx *= -1;
+          if (l.y > height * 0.9 || l.y < height * 0.4) l.vy *= -1;
+        });
+      }
+      draw(ctx) {
+        const anchorX = width * 0.18;
+        const anchorY = height * 0.76;
+
+        // Draw connecting protective mucilage strands
+        ctx.save();
+        ctx.strokeStyle = 'rgba(74, 222, 128, 0.16)';
+        ctx.lineWidth = 14;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        for (let i = 0; i < this.eggs.length - 1; i += 2) {
+          ctx.moveTo(anchorX + this.eggs[i].relX, anchorY + this.eggs[i].relY);
+          ctx.lineTo(anchorX + this.eggs[i + 1].relX, anchorY + this.eggs[i + 1].relY);
+        }
+        ctx.stroke();
+
+        // Draw individual translucent jelly spheres nestled safely
+        this.eggs.forEach(egg => {
+          const floatOffset = Math.sin(globalTime * 1.6 + egg.pulsePhase) * 2;
+          const ex = anchorX + egg.relX;
+          const ey = anchorY + egg.relY + floatOffset;
+
+          ctx.beginPath();
+          ctx.arc(ex, ey, egg.r, 0, Math.PI * 2);
+
+          const grad = ctx.createRadialGradient(
+            ex - egg.r * 0.35, ey - egg.r * 0.35, 1.5,
+            ex, ey, egg.r
+          );
+          grad.addColorStop(0, 'rgba(255, 255, 255, 0.75)');
+          grad.addColorStop(0.4, 'rgba(167, 243, 208, 0.38)');
+          grad.addColorStop(0.85, 'rgba(34, 197, 94, 0.25)');
+          grad.addColorStop(1, 'rgba(16, 185, 129, 0.5)');
+          ctx.fillStyle = grad;
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(209, 250, 229, 0.55)';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
+          // Dark developing embryo inside
+          if (!egg.hatched) {
+            const pulse = Math.sin(globalTime * egg.pulseSpeed + egg.pulsePhase) * 0.6;
+            const curR = egg.embryoR + pulse;
+
+            ctx.beginPath();
+            ctx.arc(ex, ey, curR, 0, Math.PI * 2);
+            ctx.fillStyle = '#091512';
+            ctx.fill();
+
+            // Embryo cleavage notch
+            ctx.beginPath();
+            ctx.ellipse(ex + 1.2, ey - 1.2, curR * 0.6, curR * 0.35, 0.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#1e382b';
+            ctx.fill();
+
+            // Surface specular gleam
+            ctx.beginPath();
+            ctx.arc(ex - egg.r * 0.35, ey - egg.r * 0.35, egg.r * 0.25, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fill();
+          } else {
+            // Hatched empty envelope
+            ctx.beginPath();
+            ctx.arc(ex, ey, egg.r * 0.45, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fill();
+          }
+        });
+
+        // Render swimming newly hatched larvae
+        this.hatchedLarvae.forEach(l => {
+          ctx.save();
+          ctx.translate(l.x, l.y);
+          ctx.rotate(Math.atan2(l.vy, l.vx));
+
+          // Body
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 5, 3.5, 0, 0, Math.PI * 2);
+          ctx.fillStyle = '#06281e';
+          ctx.fill();
+
+          // Wiggling tail
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          const tailSine = Math.sin(l.tailPhase) * 4;
+          ctx.quadraticCurveTo(-6, tailSine, -14, tailSine * 1.6);
+          ctx.strokeStyle = '#053826';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.restore();
+        });
+
+        ctx.restore();
+      }
+    }
+
+    class TadpoleActor {
+      constructor(type = 'early') {
+        this.type = type; // 'early' (stage 2) or 'limbed' (stage 3)
+        this.x = width * 0.45;
+        this.y = height * 0.65;
+        this.targetX = width * 0.5;
+        this.targetY = height * 0.6;
+        this.heading = 0;
+        this.swimCycle = 0;
+        this.gillSway = 0;
+
+        // Tail joints
+        this.jointCount = 15;
+        this.jointLen = 6.2;
+        this.joints = [];
+        for (let i = 0; i < this.jointCount; i++) {
+          this.joints.push({ x: this.x - i * this.jointLen, y: this.y });
+        }
+      }
+      setTarget(tx, ty) {
+        this.targetX = tx;
+        this.targetY = ty;
+      }
+      update(dt) {
+        this.swimCycle += dt * 9;
+        this.gillSway += dt * 6;
+
+        const dx = this.targetX - this.x;
+        const dy = this.targetY - this.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 45 || Math.random() < 0.015) {
+          this.targetX = width * (0.2 + Math.random() * 0.55);
+          this.targetY = height * (0.45 + Math.random() * 0.35);
+        }
+
+        const desiredAngle = Math.atan2(dy, dx);
+        let diff = desiredAngle - this.heading;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        this.heading += diff * 0.08;
+
+        const spd = this.type === 'limbed' ? 2.8 : 2.2;
+        this.x += Math.cos(this.heading) * spd;
+        this.y += Math.sin(this.heading) * spd;
+
+        // Pond boundaries
+        if (this.x < 70) this.heading = 0;
+        if (this.x > width - 70) this.heading = Math.PI;
+        if (this.y < height * 0.35) this.heading = Math.PI / 2;
+        if (this.y > height - 60) this.heading = -Math.PI / 2;
+
+        // Propagate tail wave physics
+        this.joints[0] = { x: this.x, y: this.y };
+        for (let i = 1; i < this.jointCount; i++) {
+          const prev = this.joints[i - 1];
+          const curr = this.joints[i];
+          let angle = Math.atan2(curr.y - prev.y, curr.x - prev.x);
+          const lateral = Math.sin(this.swimCycle - i * 0.45) * (0.16 + i * 0.025);
+          angle += lateral;
+          curr.x = prev.x + Math.cos(angle) * this.jointLen;
+          curr.y = prev.y + Math.sin(angle) * this.jointLen;
+        }
+
+        // Feed on nearby algae
+        for (let i = algaeList.length - 1; i >= 0; i--) {
+          const a = algaeList[i];
+          if (Math.hypot(a.x - this.x, a.y - this.y) < 28) {
+            algaeList.splice(i, 1);
+            addRipple(this.x, this.y, 30, 0.4);
+            audio.playPop();
+          }
+        }
+      }
+      draw(ctx) {
+        ctx.save();
+
+        // 1. Translucent undulating fin
+        ctx.beginPath();
+        for (let i = 1; i < this.jointCount; i++) {
+          const seg = this.joints[i];
+          const norm = Math.atan2(seg.y - this.joints[i - 1].y, seg.x - this.joints[i - 1].x) + Math.PI / 2;
+          const finW = Math.sin((i / this.jointCount) * Math.PI) * (this.type === 'limbed' ? 14 : 17);
+          const px = seg.x + Math.cos(norm) * finW;
+          const py = seg.y + Math.sin(norm) * finW;
+          if (i === 1) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        for (let i = this.jointCount - 1; i >= 1; i--) {
+          const seg = this.joints[i];
+          const norm = Math.atan2(seg.y - this.joints[i - 1].y, seg.x - this.joints[i - 1].x) - Math.PI / 2;
+          const finW = Math.sin((i / this.jointCount) * Math.PI) * (this.type === 'limbed' ? 14 : 17);
+          const px = seg.x + Math.cos(norm) * finW;
+          const py = seg.y + Math.sin(norm) * finW;
+          ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fillStyle = this.type === 'limbed' ? 'rgba(52, 211, 153, 0.32)' : 'rgba(34, 197, 94, 0.38)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(167, 243, 208, 0.45)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // 2. Central tail muscular core
+        ctx.beginPath();
+        ctx.moveTo(this.joints[0].x, this.joints[0].y);
+        for (let i = 1; i < this.jointCount; i++) {
+          ctx.lineTo(this.joints[i].x, this.joints[i].y);
+        }
+        ctx.strokeStyle = '#064e3b';
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // 3. Head & Torso
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.heading);
+
+        const bodyGrad = ctx.createRadialGradient(-3, -3, 2, 0, 0, 22);
+        if (this.type === 'limbed') {
+          bodyGrad.addColorStop(0, '#34d399');
+          bodyGrad.addColorStop(0.6, '#059669');
+          bodyGrad.addColorStop(1, '#064e3b');
+        } else {
+          bodyGrad.addColorStop(0, '#1e293b');
+          bodyGrad.addColorStop(0.6, '#0f172a');
+          bodyGrad.addColorStop(1, '#020617');
+        }
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 21, 14, 0, 0, Math.PI * 2);
+        ctx.fillStyle = bodyGrad;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(74, 222, 128, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Golden Eyes
+        for (let side of [-1, 1]) {
+          ctx.fillStyle = '#fef08a';
+          ctx.beginPath();
+          ctx.arc(8, side * 9, 3.8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath();
+          ctx.arc(8, side * 9, 2.0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Branching external gills for Early Tadpole
+        if (this.type === 'early') {
+          ctx.strokeStyle = '#f43f5e';
+          ctx.lineWidth = 1.6;
+          ctx.lineCap = 'round';
+          for (let side of [-1, 1]) {
+            for (let g = 0; g < 3; g++) {
+              const sway = Math.sin(this.gillSway + g) * 3;
+              ctx.beginPath();
+              ctx.moveTo(-2, side * 11);
+              ctx.quadraticCurveTo(-8 + sway, side * (18 + g * 4), -14, side * (20 + g * 5));
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Powerful kicking hind legs for Limbed Tadpole
+        if (this.type === 'limbed') {
+          const kick = Math.sin(this.swimCycle * 0.8) * 0.45;
+          for (let side of [-1, 1]) {
+            ctx.save();
+            ctx.translate(-10, side * 10);
+            ctx.rotate(side * (0.8 + kick));
+
+            // Thigh & Shank
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-12, side * 12);
+            ctx.lineTo(-24, side * 8);
+            ctx.strokeStyle = '#059669';
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Webbed foot
+            ctx.beginPath();
+            ctx.arc(-24, side * 8, 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#34d399';
+            ctx.fill();
+
+            ctx.restore();
+
+            // Front arm buds
+            ctx.beginPath();
+            ctx.ellipse(4, side * 12, 5, 2.5, side * 0.4, 0, Math.PI * 2);
+            ctx.fillStyle = '#10b981';
+            ctx.fill();
+          }
+        }
+
+        ctx.restore();
+        ctx.restore();
+      }
+    }
+
+    class FrogletActor {
+      constructor() {
+        this.x = width * 0.58;
+        this.y = height * 0.68;
+        this.tailLen = 30; // Shrinking tail via apoptosis
+        this.heading = -0.65;
+        this.climbingProgress = 0;
+      }
+      climbToPad() {
+        this.climbingProgress = 1.0;
+        addRipple(this.x, this.y, 50, 0.8);
+      }
+      update(dt) {
+        if (this.tailLen > 8) {
+          this.tailLen -= dt * 1.5;
+        }
+        // Naturally crawl towards the main lily pad
+        const targetX = width * 0.68;
+        const targetY = height * 0.60;
+        const climbSpeed = this.climbingProgress > 0 ? 0.09 : 0.03;
+        this.x += (targetX - this.x) * climbSpeed;
+        this.y += (targetY - this.y) * climbSpeed;
+      }
+      draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.heading);
+
+        // Shortening tail remnant
+        if (this.tailLen > 2) {
+          ctx.beginPath();
+          ctx.moveTo(-18, 0);
+          const wag = Math.sin(globalTime * 6) * 3;
+          ctx.quadraticCurveTo(-24, wag, -18 - this.tailLen, wag * 1.5);
+          ctx.strokeStyle = '#065f46';
+          ctx.lineWidth = 4;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.ellipse(-18 - this.tailLen * 0.5, 0, this.tailLen * 0.5, 3.5, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(52, 211, 153, 0.28)';
+          ctx.fill();
+        }
+
+        // Folded hind legs
+        for (let side of [-1, 1]) {
+          ctx.save();
+          ctx.translate(-10, side * 13);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(-15, side * 14);
+          ctx.lineTo(-6, side * 22);
+          ctx.strokeStyle = '#047857';
+          ctx.lineWidth = 4.5;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(-6, side * 22, 4.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#10b981';
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Front crawling arms
+        for (let side of [-1, 1]) {
+          ctx.save();
+          ctx.translate(8, side * 11);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(8, side * 14);
+          ctx.strokeStyle = '#059669';
+          ctx.lineWidth = 3.5;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Froglet Body
+        const grad = ctx.createRadialGradient(-3, -3, 3, 0, 0, 22);
+        grad.addColorStop(0, '#34d399');
+        grad.addColorStop(0.65, '#059669');
+        grad.addColorStop(1, '#064e3b');
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 22, 16, 0, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Eyes
+        for (let side of [-1, 1]) {
+          ctx.beginPath();
+          ctx.arc(11, side * 11, 4.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#fbbf24';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.ellipse(11, side * 11, 3.5, 1.2, 0, 0, Math.PI * 2);
+          ctx.fillStyle = '#0f172a';
+          ctx.fill();
+        }
+
+        // Throat breathing flutter
+        const flutter = Math.sin(globalTime * 8) * 1.8;
+        ctx.beginPath();
+        ctx.ellipse(15, 0, 4.5 + flutter, 5, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(240, 253, 244, 0.35)';
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    class AdultFrogActor {
+      constructor() {
+        this.updatePosition();
+        this.vocalPulse = 0;
+        this.isCroaking = false;
+        this.croakTimer = 2.0;
+        this.blinkTimer = 0;
+        this.isBlinking = false;
+
+        // Tongue attack mechanism
+        this.tongueState = 'idle'; // 'idle', 'extending', 'retracting'
+        this.tongueProgress = 0;
+        this.tongueTarget = null;
+        this.caughtFly = null;
+
+        // Jump mechanism
+        this.isJumping = false;
+        this.jumpT = 0;
+        this.jumpOriginY = 0;
+      }
+      updatePosition() {
+        // Securely resting on right main lily pad (70% width, 57% height)
+        this.baseX = width * 0.70;
+        this.baseY = height * 0.57;
+        this.x = this.baseX;
+        this.y = this.baseY;
+      }
+      croak() {
+        this.isCroaking = true;
+        this.vocalPulse = 1.0;
+        audio.playCroak();
+        addRipple(this.x, this.y, 50, 0.7);
+      }
+      jump() {
+        if (this.isJumping) return;
+        this.isJumping = true;
+        this.jumpT = 0;
+        this.jumpOriginY = this.baseY;
+        this.croak();
+      }
+      attackFly(target) {
+        if (this.tongueState !== 'idle' || this.isJumping) return;
+        this.tongueState = 'extending';
+        this.tongueProgress = 0;
+        this.tongueTarget = target;
+        this.caughtFly = null;
+        audio.playTongueSnap();
+      }
+      update(dt) {
+        this.vocalPulse += dt * 5;
+        this.croakTimer -= dt;
+        if (this.croakTimer <= 0) {
+          if (Math.random() < 0.3) this.croak();
+          this.croakTimer = 3.5 + Math.random() * 3.5;
+        }
+
+        // Eye blinking
+        this.blinkTimer += dt;
+        if (this.blinkTimer > 4.0) {
+          this.isBlinking = true;
+          if (this.blinkTimer > 4.2) {
+            this.isBlinking = false;
+            this.blinkTimer = 0;
+          }
+        }
+
+        // Jump trajectory
+        if (this.isJumping) {
+          this.jumpT += dt * 2.5;
+          if (this.jumpT >= 1) {
+            this.isJumping = false;
+            this.y = this.baseY;
+            addRipple(this.x, this.y, 60, 0.9);
+          } else {
+            const arc = Math.sin(this.jumpT * Math.PI) * 55;
+            this.y = this.jumpOriginY - arc;
+          }
+        }
+
+        // Elastic tongue attack
+        if (this.tongueState === 'extending') {
+          this.tongueProgress += dt * 16;
+          if (this.tongueProgress >= 1) {
+            this.tongueProgress = 1;
+            this.tongueState = 'retracting';
+            if (this.tongueTarget && this.tongueTarget.alive) {
+              this.tongueTarget.alive = false;
+              this.caughtFly = this.tongueTarget;
+              audio.playTongueSnap();
+            }
+          }
+        } else if (this.tongueState === 'retracting') {
+          this.tongueProgress -= dt * 10;
+          if (this.caughtFly) {
+            this.caughtFly.x = this.x + (this.caughtFly.x - this.x) * this.tongueProgress;
+            this.caughtFly.y = this.y + (this.caughtFly.y - this.y) * this.tongueProgress;
+          }
+          if (this.tongueProgress <= 0) {
+            this.tongueProgress = 0;
+            this.tongueState = 'idle';
+            this.caughtFly = null;
+            this.tongueTarget = null;
+          }
+        }
+
+        // Auto target flies when active
+        if (this.tongueState === 'idle' && !this.isJumping) {
+          for (let f of flies) {
+            if (f.alive && Math.hypot(f.x - this.x, f.y - this.y) < 260) {
+              this.attackFly(f);
+              break;
+            }
+          }
+        }
+      }
+      draw(ctx, isDimParent = false) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        if (isDimParent) {
+          // If in earlier stages, adult frog is quietly watching as calm parent
+          ctx.globalAlpha = 0.85;
+        }
+
+        // 1. Long elastic tongue snap
+        if (this.tongueState !== 'idle' && this.tongueTarget) {
+          ctx.save();
+          const targetRelX = (this.tongueTarget.x - this.x) * this.tongueProgress;
+          const targetRelY = (this.tongueTarget.y - this.y) * this.tongueProgress;
+
+          ctx.beginPath();
+          ctx.moveTo(-5, -6);
+          ctx.quadraticCurveTo(
+            targetRelX * 0.5,
+            targetRelY * 0.5 - 15,
+            targetRelX,
+            targetRelY
+          );
+          ctx.strokeStyle = '#f43f5e';
+          ctx.lineWidth = 5;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          // Sticky tongue tip
+          ctx.beginPath();
+          ctx.arc(targetRelX, targetRelY, 7, 0, Math.PI * 2);
+          ctx.fillStyle = '#e11d48';
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // 2. Muscular folded back legs
+        for (let side of [-1, 1]) {
+          ctx.save();
+          ctx.translate(-15, side * 19);
+
+          // Big thigh
+          ctx.beginPath();
+          ctx.ellipse(-10, side * 8, 23, 12, side * 0.4, 0, Math.PI * 2);
+          ctx.fillStyle = '#047857';
+          ctx.fill();
+          ctx.strokeStyle = '#065f46';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Folded shin and webbed foot resting on leaf
+          ctx.beginPath();
+          ctx.moveTo(-16, side * 16);
+          ctx.lineTo(-6, side * 29);
+          ctx.lineTo(9, side * 27);
+          ctx.strokeStyle = '#10b981';
+          ctx.lineWidth = 5;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(9, side * 27, 6.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#34d399';
+          ctx.fill();
+
+          ctx.restore();
+        }
+
+        // 3. Front arms planted on leaf
+        for (let side of [-1, 1]) {
+          ctx.save();
+          ctx.translate(15, side * 19);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(12, side * 12);
+          ctx.lineTo(21, side * 10);
+          ctx.strokeStyle = '#059669';
+          ctx.lineWidth = 4.8;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(21, side * 10, 4.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#34d399';
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // 4. Main Frog Body Torso
+        const bodyGrad = ctx.createRadialGradient(-6, -6, 5, 0, 0, 38);
+        bodyGrad.addColorStop(0, '#4ade80');
+        bodyGrad.addColorStop(0.65, '#15803d');
+        bodyGrad.addColorStop(0.9, '#14532d');
+        bodyGrad.addColorStop(1, '#052e16');
+
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 34, 26, 0, 0, Math.PI * 2);
+        ctx.fillStyle = bodyGrad;
+        ctx.fill();
+        ctx.strokeStyle = '#22c55e';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Camouflage spots
+        ctx.fillStyle = 'rgba(5, 46, 22, 0.72)';
+        const spots = [
+          { x: -14, y: -9, r: 4.5 },
+          { x: -12, y: 10, r: 4.0 },
+          { x: 3, y: -13, r: 4.2 },
+          { x: 7, y: 9, r: 3.8 },
+          { x: -2, y: 0, r: 5.5 },
+          { x: -21, y: 2, r: 3.5 }
+        ];
+        spots.forEach(sp => {
+          ctx.beginPath();
+          ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // 5. Throat Vocal Sac (膨胀共鸣鸣囊)
+        const sacSize = Math.abs(Math.sin(this.vocalPulse)) * (this.isCroaking ? 20 : 6);
+        if (sacSize > 1) {
+          ctx.beginPath();
+          ctx.ellipse(23 + sacSize * 0.4, 0, sacSize, sacSize * 0.85, 0, 0, Math.PI * 2);
+          const sacGrad = ctx.createRadialGradient(25, 0, 2, 25, 0, sacSize);
+          sacGrad.addColorStop(0, 'rgba(254, 240, 138, 0.9)');
+          sacGrad.addColorStop(0.7, 'rgba(167, 243, 208, 0.6)');
+          sacGrad.addColorStop(1, 'rgba(34, 197, 94, 0.3)');
+          ctx.fillStyle = sacGrad;
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(250, 204, 21, 0.65)';
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+        }
+
+        // 6. Prominent Amphibian Eyes with Horizontal Pupils
+        for (let side of [-1, 1]) {
+          const eyeX = 15;
+          const eyeY = side * 16;
+
+          // Eye socket dome
+          ctx.beginPath();
+          ctx.arc(eyeX, eyeY, 9.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#15803d';
+          ctx.fill();
+          ctx.strokeStyle = '#22c55e';
+          ctx.lineWidth = 1.3;
+          ctx.stroke();
+
+          // Golden Iris
+          ctx.beginPath();
+          ctx.arc(eyeX + 1, eyeY, 6.8, 0, Math.PI * 2);
+          ctx.fillStyle = '#f59e0b';
+          ctx.fill();
+
+          if (this.isBlinking) {
+            // Nictitating membrane blink
+            ctx.beginPath();
+            ctx.ellipse(eyeX + 1, eyeY, 6.8, 1.8, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#14532d';
+            ctx.fill();
+          } else {
+            // Horizontal slit pupil
+            ctx.beginPath();
+            ctx.ellipse(eyeX + 1.5, eyeY, 5.2, 1.9, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#020617';
+            ctx.fill();
+
+            // Specular highlight
+            ctx.beginPath();
+            ctx.arc(eyeX + 2.5, eyeY - 2.2, 1.8, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+          }
+
+          // Tympanum (ear drum)
+          ctx.beginPath();
+          ctx.arc(5, side * 20, 5, 0, Math.PI * 2);
+          ctx.fillStyle = '#78350f';
+          ctx.fill();
+          ctx.strokeStyle = '#d97706';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+    }
+
+    const frogspawn = new FrogspawnSystem();
+    const earlyTadpole = new TadpoleActor('early');
+    const limbedTadpole = new TadpoleActor('limbed');
+    const froglet = new FrogletActor();
+    const adultFrog = new AdultFrogActor();
+
+    function drawPondScenery(t) {
+      // 1. Water gradient
+      const waterGrad = ctx.createLinearGradient(0, 0, 0, height);
+      waterGrad.addColorStop(0, '#0c4a4f');
+      waterGrad.addColorStop(0.2, '#06373b');
+      waterGrad.addColorStop(0.65, '#04282e');
+      waterGrad.addColorStop(1, '#01161a');
+      ctx.fillStyle = waterGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      // 2. Caustics light rays
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      for (let i = 0; i < 5; i++) {
+        const rayGrad = ctx.createLinearGradient(0, 0, 0, height);
+        const shift = Math.sin(t * 0.6 + i * 1.2) * 45;
+        rayGrad.addColorStop(0, 'rgba(52, 211, 153, 0.12)');
+        rayGrad.addColorStop(0.6, 'rgba(20, 184, 166, 0.03)');
+        rayGrad.addColorStop(1, 'rgba(0,0,0,0)');
+
+        ctx.fillStyle = rayGrad;
+        ctx.beginPath();
+        const startX = width * (0.12 + i * 0.2) + shift;
+        ctx.moveTo(startX, 0);
+        ctx.lineTo(startX + 45, 0);
+        ctx.lineTo(startX + 150, height);
+        ctx.lineTo(startX + 65, height);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // 3. Sandy bottom
+      ctx.fillStyle = '#021417';
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      for (let x = 0; x <= width; x += 30) {
+        const yOff = Math.sin(x * 0.015) * 12 + Math.cos(x * 0.03) * 6;
+        ctx.lineTo(x, height - 28 + yOff);
+      }
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      ctx.fill();
+
+      // 4. Swaying Reeds (Water grasses) in lower-left & right
+      drawReeds(t);
+
+      // 5. Rising bubbles
+      bubbles.forEach(b => {
+        b.y -= b.speed * 0.002;
+        if (b.y < 0.1) b.y = 0.95;
+        const bx = b.x * width + Math.sin(t * 2 + b.wobble) * 6;
+        const by = b.y * height;
+
+        ctx.beginPath();
+        ctx.arc(bx, by, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(167, 243, 208, 0.18)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(209, 250, 229, 0.35)';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      });
+
+      // 6. Floating Lily Pads
+      // Main right pad (seated by frog)
+      drawLilyPad(width * 0.70, height * 0.57, 130, 92, -0.15, t);
+      // Left pad with pink lotus flower
+      drawLilyPad(width * 0.28, height * 0.32, 90, 64, 0.35, t, true);
+      // Top right smaller pad
+      drawLilyPad(width * 0.88, height * 0.26, 75, 52, -0.4, t);
+
+      // 7. Water ripples
+      drawRipples();
+    }
+
+    function drawReeds(t) {
+      ctx.save();
+      // Clusters: Left-bottom (where eggs hide), and right background
+      const clusters = [
+        { x: width * 0.15, h: height * 0.58, count: 8, color: '#064e3b' },
+        { x: width * 0.22, h: height * 0.48, count: 6, color: '#047857' },
+        { x: width * 0.92, h: height * 0.65, count: 7, color: '#065f46' }
+      ];
+
+      clusters.forEach(c => {
+        for (let i = 0; i < c.count; i++) {
+          const bx = c.x + (i - c.count / 2) * 16;
+          const sway = Math.sin(t * 1.3 + i * 0.7 + bx) * 20;
+          ctx.beginPath();
+          ctx.moveTo(bx, height);
+          ctx.quadraticCurveTo(
+            bx + sway * 0.5,
+            height - c.h * 0.5,
+            bx + sway,
+            height - c.h - (i % 3) * 22
+          );
+          ctx.strokeStyle = c.color;
+          ctx.lineWidth = 4.5;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+        }
+      });
+      ctx.restore();
+    }
+
+    function drawLilyPad(cx, cy, rx, ry, rot, t, hasLotus = false) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rot + Math.sin(t * 0.8 + cx) * 0.025);
+
+      // Drop shadow in water
+      ctx.beginPath();
+      ctx.ellipse(0, 15, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(2, 22, 25, 0.45)';
+      ctx.fill();
+
+      // Lily Pad with radial slit
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, rx, 0.22, Math.PI * 2 - 0.22, false);
+      ctx.closePath();
+
+      const padGrad = ctx.createRadialGradient(-rx * 0.2, -ry * 0.2, 5, 0, 0, rx);
+      padGrad.addColorStop(0, '#10b981');
+      padGrad.addColorStop(0.7, '#059669');
+      padGrad.addColorStop(1, '#047857');
+      ctx.fillStyle = padGrad;
+      ctx.fill();
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Veins
+      ctx.strokeStyle = 'rgba(167, 243, 208, 0.26)';
+      ctx.lineWidth = 1.2;
+      for (let a = 0.5; a < Math.PI * 2 - 0.5; a += 0.5) {
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(Math.cos(a) * rx * 0.9, Math.sin(a) * ry * 0.9);
+        ctx.stroke();
+      }
+
+      // Water droplet
+      ctx.beginPath();
+      ctx.arc(rx * 0.3, -ry * 0.25, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      ctx.fill();
+
+      if (hasLotus) {
+        drawLotusFlower(rx * 0.5, -ry * 0.2);
+      }
+
+      ctx.restore();
+    }
+
+    function drawLotusFlower(lx, ly) {
+      ctx.save();
+      ctx.translate(lx, ly);
+      const petals = 9;
+      for (let i = 0; i < petals; i++) {
+        ctx.save();
+        ctx.rotate((i / petals) * Math.PI * 2);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(8, -16, 0, -26);
+        ctx.quadraticCurveTo(-8, -16, 0, 0);
+        const pGrad = ctx.createLinearGradient(0, 0, 0, -26);
+        pGrad.addColorStop(0, '#fbcfe8');
+        pGrad.addColorStop(0.7, '#f472b6');
+        pGrad.addColorStop(1, '#ffffff');
+        ctx.fillStyle = pGrad;
+        ctx.fill();
+        ctx.restore();
+      }
+      ctx.beginPath();
+      ctx.arc(0, 0, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#fef08a';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawRipples() {
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const rip = ripples[i];
+        rip.r += rip.speed;
+        rip.alpha -= 0.015;
+        if (rip.alpha <= 0 || rip.r >= rip.maxR) {
+          ripples.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(rip.x, rip.y, rip.r, rip.r * 0.55, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(110, 231, 183, ${rip.alpha})`;
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    function updateInsects(dt) {
+      for (let i = flies.length - 1; i >= 0; i--) {
+        const f = flies[i];
+        if (!f.alive) {
+          if (adultFrog.tongueState === 'idle') flies.splice(i, 1);
+          continue;
+        }
+
+        f.x += f.vx;
+        f.y += f.vy;
+        f.vx += (Math.random() - 0.5) * 1.2;
+        f.vy += (Math.random() - 0.5) * 0.9;
+        f.vx = Math.max(-3.5, Math.min(3.5, f.vx));
+        f.vy = Math.max(-2.5, Math.min(2.5, f.vy));
+
+        if (f.x < 50) f.vx = Math.abs(f.vx);
+        if (f.x > width - 50) f.vx = -Math.abs(f.vx);
+        if (f.y < 50) f.vy = Math.abs(f.vy);
+        if (f.y > height * 0.6) f.vy = -Math.abs(f.vy);
+
+        ctx.save();
+        ctx.translate(f.x, f.y);
+        const wingOff = Math.sin(globalTime * 35 + f.wingPhase) * 5;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.beginPath();
+        ctx.ellipse(-2, -4 + wingOff * 0.2, 5, 2.5, -0.4, 0, Math.PI * 2);
+        ctx.ellipse(-2, 4 - wingOff * 0.2, 5, 2.5, 0.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 3.5, 2, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#0f172a';
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function updateAlgae(dt) {
+      for (let i = algaeList.length - 1; i >= 0; i--) {
+        const a = algaeList[i];
+        a.x += a.vx;
+        a.y += a.vy;
+        a.life -= dt * 25;
+        if (a.life <= 0 || a.y > height - 25) {
+          algaeList.splice(i, 1);
+          continue;
+        }
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(74, 222, 128, 0.65)';
+        ctx.fill();
+      }
+    }
+
+    function switchStage(idx) {
+      if (idx < 0) idx = 4;
+      if (idx > 4) idx = 0;
+      currentStage = idx;
+
+      const info = STAGE_INFO[currentStage];
+      document.getElementById('stageBadge').textContent = info.badge;
+      document.getElementById('stageTitle').textContent = info.title;
+      document.getElementById('stageDesc').textContent = info.desc;
+      document.getElementById('interactionPrompt').textContent = info.prompt;
+      document.getElementById('primaryActionText').textContent = info.actionText;
+      document.getElementById('primaryActionIcon').textContent = info.actionIcon;
+
+      // Update pill buttons
+      document.querySelectorAll('.stage-btn').forEach((b, i) => {
+        if (i === currentStage) {
+          b.className = "stage-btn stage-pill-active py-1.5 sm:py-2 px-1 rounded-xl text-center text-xs font-medium transition-all flex flex-col sm:flex-row items-center justify-center gap-1";
+        } else {
+          b.className = "stage-btn py-1.5 sm:py-2 px-1 rounded-xl text-center text-xs font-medium text-emerald-300/70 hover:text-white glass-btn transition-all flex flex-col sm:flex-row items-center justify-center gap-1";
+        }
+      });
+
+      audio.playWaterDrop();
+
+      if (currentStage === 4 && flies.length === 0) {
+        spawnFly();
+        spawnFly();
+      }
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Re-anchor actors proportionally
+      frogspawn.init();
+      Object.assign(earlyTadpole, new TadpoleActor('early'));
+      Object.assign(limbedTadpole, new TadpoleActor('limbed'));
+      Object.assign(froglet, new FrogletActor());
+      adultFrog.updatePosition();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // Canvas click interaction
+    canvas.addEventListener('pointerdown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      addRipple(clickX, clickY, 70, 1.0);
+
+      // Check click on adult frog
+      if (currentStage !== 3 && Math.hypot(clickX - adultFrog.x, clickY - adultFrog.y) < 55) {
+        adultFrog.jump();
+        return;
+      }
+
+      // Check click on eggs in lower-left
+      const eggDist = Math.hypot(clickX - width * 0.18, clickY - height * 0.76);
+      if (currentStage === 0 && eggDist < 70) {
+        frogspawn.triggerHatch();
+      }
+
+      if (currentStage === 1) {
+        earlyTadpole.setTarget(clickX, clickY);
+        spawnAlgae(3);
+      } else if (currentStage === 2) {
+        limbedTadpole.setTarget(clickX, clickY);
+      } else if (currentStage === 3) {
+        froglet.climbToPad();
+      } else if (currentStage === 4) {
+        spawnFly(clickX, clickY);
+      }
+    });
+
+    // Stage button clicks
+    document.querySelectorAll('.stage-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const s = parseInt(btn.getAttribute('data-stage'), 10);
+        switchStage(s);
+      });
+    });
+
+    // Primary action button
+    document.getElementById('primaryActionBtn').addEventListener('click', () => {
+      if (currentStage === 0) {
+        frogspawn.triggerHatch();
+      } else if (currentStage === 1) {
+        spawnAlgae(12);
+      } else if (currentStage === 2) {
+        limbedTadpole.swimCycle += 5;
+        addRipple(limbedTadpole.x, limbedTadpole.y, 60, 1.0);
+      } else if (currentStage === 3) {
+        froglet.climbToPad();
+      } else if (currentStage === 4) {
+        spawnFly();
+        adultFrog.croak();
+      }
+    });
+
+    // Reset button
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      if (currentStage === 0) frogspawn.init();
+      if (currentStage === 1) {
+        Object.assign(earlyTadpole, new TadpoleActor('early'));
+      }
+      if (currentStage === 2) {
+        Object.assign(limbedTadpole, new TadpoleActor('limbed'));
+      }
+      if (currentStage === 3) {
+        Object.assign(froglet, new FrogletActor());
+      }
+      if (currentStage === 4) {
+        Object.assign(adultFrog, new AdultFrogActor());
+        flies.length = 0;
+        spawnFly();
+      }
+      addRipple(width * 0.5, height * 0.5, 80, 1.0);
+    });
+
+    // Prev / Next buttons
+    document.getElementById('prevBtn').addEventListener('click', () => switchStage(currentStage - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => switchStage(currentStage + 1));
+
+    // Sound toggle
+    const soundBtn = document.getElementById('soundBtn');
+    soundBtn.addEventListener('click', () => {
+      audio.init();
+      audio.muted = !audio.muted;
+      document.getElementById('soundIcon').textContent = audio.muted ? '🔇' : '🔊';
+      document.getElementById('soundText').textContent = audio.muted ? '静音' : '音效开';
+    });
+
+    // Auto Cycle Evolution
+    const autoCycleBtn = document.getElementById('autoCycleBtn');
+    autoCycleBtn.addEventListener('click', () => {
+      autoCycling = !autoCycling;
+      autoCycleTimer = 0;
+      if (autoCycling) {
+        autoCycleBtn.classList.add('bg-amber-600/80', 'text-white', 'animate-pulse');
+        document.getElementById('autoIcon').textContent = '⏹';
+        document.getElementById('autoText').textContent = '暂停演化';
+      } else {
+        autoCycleBtn.classList.remove('bg-amber-600/80', 'text-white', 'animate-pulse');
+        document.getElementById('autoIcon').textContent = '▶';
+        document.getElementById('autoText').textContent = '自动演化';
+      }
+    });
+
+    let lastTime = performance.now();
+
+    function renderFrame(now) {
+      requestAnimationFrame(renderFrame);
+
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+      globalTime += dt;
+
+      // Auto cycle timer
+      if (autoCycling) {
+        autoCycleTimer += dt;
+        if (autoCycleTimer >= STAGE_INTERVAL) {
+          autoCycleTimer = 0;
+          switchStage((currentStage + 1) % 5);
+        }
+      }
+
+      // 1. Draw pond scenery
+      drawPondScenery(globalTime);
+
+      // 2. Draw environmental algae
+      updateAlgae(dt);
+
+      // 3. Stage 1: Frogspawn nestled in lower-left reeds
+      if (currentStage === 0) {
+        frogspawn.update(dt);
+        frogspawn.draw(ctx);
+        // Mother frog rests calmly on the main lily pad watching over
+        adultFrog.update(dt);
+        adultFrog.draw(ctx, true);
+      }
+      // 4. Stage 2: Early Tadpole
+      else if (currentStage === 1) {
+        earlyTadpole.update(dt);
+        earlyTadpole.draw(ctx);
+        adultFrog.update(dt);
+        adultFrog.draw(ctx, true);
+      }
+      // 5. Stage 3: Limbed Tadpole
+      else if (currentStage === 2) {
+        limbedTadpole.update(dt);
+        limbedTadpole.draw(ctx);
+        adultFrog.update(dt);
+        adultFrog.draw(ctx, true);
+      }
+      // 6. Stage 4: Froglet climbing
+      else if (currentStage === 3) {
+        froglet.update(dt);
+        froglet.draw(ctx);
+      }
+      // 7. Stage 5: Adult Frog Hunting & Croaking
+      else if (currentStage === 4) {
+        adultFrog.update(dt);
+        adultFrog.draw(ctx, false);
+      }
+
+      // 8. Draw flying insects
+      updateInsects(dt);
+    }
+
+    // Initialize on window load
+    window.addEventListener('load', () => {
+      resizeCanvas();
+      switchStage(0);
+      spawnFly();
+      spawnAlgae(8);
+      requestAnimationFrame(renderFrame);
+    });
+  </script>
+</body>
+</html>
