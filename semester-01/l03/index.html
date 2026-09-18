@@ -534,6 +534,20 @@
 .game-orientation{display:none;position:absolute;inset:55px 0 0;align-items:center;justify-content:center;text-align:center;padding:24px;background:#061e27;font-size:20px;line-height:1.7;z-index:2}
 @media(orientation:portrait) and (max-width:900px){.game-orientation{display:flex}}
 @media(orientation:landscape) and (max-height:520px){.game-dialog-heading{padding-top:5px;padding-bottom:5px}.game-dialog-heading h2{font-size:13px}#gameClose{font-size:12px;padding:4px 10px}}
+
+/* Shared closing assignment for the student and parent editions. */
+#homeworkSlide .homework-content{position:absolute;inset:0;padding:6.7cqw 6.5cqw 6.6cqw;color:var(--ink);font-family:var(--sans)}
+#homeworkSlide .homework-kicker{margin:0 0 1.4cqw;color:var(--teal);font:700 1.05cqw/1.5 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+#homeworkSlide h2{margin:0;font-size:4.1cqw;line-height:1.18;font-weight:900;letter-spacing:-.045em}
+#homeworkSlide h2 em{color:var(--teal);font-style:normal}
+#homeworkSlide .homework-request{position:relative;margin-top:2.4cqw;padding:1.55cqw 2.3cqw 1.8cqw;border-left:.4cqw solid var(--teal);background:#e6eee0}
+#homeworkSlide .homework-label{margin:0 0 .8cqw;color:var(--ink-soft);font-size:1.25cqw;line-height:1.5}
+#homeworkSlide blockquote{margin:0;font-size:2.45cqw;line-height:1.55;font-weight:700;letter-spacing:.01em}
+#homeworkSlide blockquote strong{font-weight:900;text-decoration:underline;text-decoration-color:var(--yellow);text-decoration-thickness:.3cqw;text-underline-offset:.55cqw}
+#homeworkSlide .homework-share{margin-top:2.25cqw;padding-top:1.45cqw;border-top:.12cqw solid #08273340}
+#homeworkSlide .homework-share p{margin:0;font-size:1.45cqw;line-height:1.7}
+#homeworkSlide .homework-share .homework-question{font-size:2cqw;line-height:1.5;font-weight:800;margin-bottom:.5cqw}
+#homeworkSlide .homework-share .homework-family{margin-top:.35cqw;font-size:1.25cqw;color:var(--ink-soft)}
 </style></head><body>
 <div class="orientation-guide" role="status"><img src="../../assets/brand/orbit-ai-logo.svg" alt="ORBIT AI"><div class="rotate-phone" aria-hidden="true"></div><strong>请横屏观看</strong><p>旋转手机，展开本课的故事。<br>左右轻扫即可翻页。</p><a href="../">返回课程目录</a></div>
 <main class="deck-shell" aria-label="ORBIT AI 第三课家长版"><div class="deck" id="deck"><div class="phase-rail" id="phaseRail" aria-label="ORBIT 学习轨道"><span class="phase-name" id="phaseName">ORBIT</span><span class="rail-node" data-letter="O">O</span><span class="rail-node" data-letter="R">R</span><span class="rail-node" data-letter="B">B</span><span class="rail-node" data-letter="I">I</span><span class="rail-node" data-letter="T">T</span></div><div id="slides"><section class="slide dark active" data-phase="cover" aria-label="ORBIT AI 通用封面">
@@ -637,6 +651,22 @@
 
 <section class="slide parent-page transfer-page" data-phase="T" aria-label="体验：动画背后的AI编程">
  <div class="edge-frame"></div><div class="parent-layout transfer-layout"><div class="parent-copy"><p class="kicker">T · Transfer into Experience</p><h2>动画背后，<br><em>AI在做什么？</em></h2><p class="lead">从一个想法，到一段动画。</p><p class="body-copy">创作者 Kevin Ngo 介绍：<br>Claude用JavaScript绘制了<br>《果蝇的一生》的每一帧。</p><a class="original-link" href="https://x.com/kevin_t_ngo/status/2099858454043349342" target="_blank" rel="noopener">查看作者原帖 <span aria-hidden="true">↗</span></a></div><div class="transfer-process"><figure><img src="assets/fruit-fly-cover.jpg" alt="本课中文讲解封面：动画背后，AI在做什么？" width="1920" height="1080"><figcaption>本课用简化动画演示代码怎样变成画面。</figcaption></figure><ol><li><b>人</b><span>提出想法与要求</span></li><li><b>AI</b><span>编写动画程序</span></li><li><b>电脑</b><span>运行代码，形成画面</span></li><li><b>人</b><span>查看效果，再提出修改</span></li></ol><p>流程示意，不是原作者的实际操作记录。</p></div></div>
+</section>
+<section class="slide l03 homework-page" id="homeworkSlide" data-phase="T" aria-label="课后尝试：让AI用JavaScript制作果蝇的一生">
+  <div class="edge-frame"></div>
+  <div class="homework-content">
+    <p class="homework-kicker">T · Transfer into Experience / 课后试一试</p>
+    <h2>让你常用的 AI，<br><em>用代码制作动画。</em></h2>
+    <div class="homework-request">
+      <p class="homework-label">打开你常用的 AI，试着对它说：</p>
+      <blockquote>请用 JavaScript 代码，<br>制作一段关于“<strong>果蝇的一生</strong>”的动画。</blockquote>
+    </div>
+    <div class="homework-share">
+      <p class="homework-question">看看会发生什么。</p>
+      <p>下节课，把你的尝试和结果告诉老师。</p>
+      <p class="homework-family">如果可以，请爸爸妈妈把你的尝试或作品发给老师。</p>
+    </div>
+  </div>
 </section>
 </div><nav class="deck-controls" aria-label="课件翻页"><button id="prev" aria-label="上一页">‹</button><span id="counter" class="slide-counter"></span><button id="next" aria-label="下一页">›</button></nav><button class="fullscreen" id="fullscreen" aria-label="全屏观看">⛶</button><a class="catalog-link" href="../">← 课程目录</a><small class="copyright">© ORBIT AI · 家庭阅读</small></div></main>
 <dialog id="gameDialog" aria-labelledby="gameTitle"><div class="game-dialog-heading"><h2 id="gameTitle">水星基地 · 未归的速迪</h2><button id="gameClose" type="button" autofocus>返回教案 ×</button></div><div id="gameViewport"><iframe id="gameFrame" data-src="assets/mercury-game.html" title="水星基地探索游戏" allow="autoplay; fullscreen" allowfullscreen></iframe></div><div class="game-orientation" role="status">请横屏游玩。<br>游戏已暂停，旋转手机后继续。</div></dialog>
