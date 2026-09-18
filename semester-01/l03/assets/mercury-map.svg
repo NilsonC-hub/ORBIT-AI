@@ -1,0 +1,354 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="sceneTitle sceneDesc">
+  <title id="sceneTitle">水星基地与硒池探索地图</title>
+  <desc id="sceneDesc">左侧是剖开屋顶的水星基地，开放舱门通往岩壁下的阴影。右侧第一处硒池环绕着一圈浅色足迹，另一处硒池隐藏在远处岩脊后。没有人物、文字或交互控件。</desc>
+  <defs>
+    <linearGradient id="groundTone" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#684638"/><stop offset=".52" stop-color="#a56947"/><stop offset="1" stop-color="#c78d59"/>
+    </linearGradient>
+    <linearGradient id="floorTone" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#344e51"/><stop offset="1" stop-color="#1a3036"/>
+    </linearGradient>
+    <linearGradient id="wallFace" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#f4e7d2"/><stop offset="1" stop-color="#8b9c96"/>
+    </linearGradient>
+    <linearGradient id="metalTop" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#bec6b9"/><stop offset="1" stop-color="#667c78"/>
+    </linearGradient>
+    <linearGradient id="poolDepth" x1="0" y1="0" x2=".6" y2="1">
+      <stop stop-color="#10191d"/><stop offset=".55" stop-color="#244046"/><stop offset="1" stop-color="#6c8a7d"/>
+    </linearGradient>
+    <radialGradient id="gasTint">
+      <stop stop-color="#efd4a4" stop-opacity=".3"/><stop offset=".65" stop-color="#efd4a4" stop-opacity=".12"/><stop offset="1" stop-color="#efd4a4" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="regolith" width="113" height="91" patternUnits="userSpaceOnUse">
+      <path d="m9 12 5-2m49 27 7 1m26 38 4-2m-74 9 4 1m23-64 2-1" stroke="#f4e7d2" stroke-width="1.3" opacity=".15"/>
+      <path d="m32 57 8 2m44-40 3 1m16 37 5-1" stroke="#302b27" stroke-width="1.5" opacity=".18"/>
+      <circle cx="60" cy="74" r="1" fill="#3d3430" opacity=".34"/><circle cx="19" cy="38" r=".9" fill="#ebc995" opacity=".25"/>
+    </pattern>
+    <pattern id="ventSlats" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M2 0V8" stroke="#11191d" stroke-width="3"/>
+    </pattern>
+    <pattern id="hatchStripes" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
+      <rect width="16" height="16" fill="#24383b"/><rect width="7" height="16" fill="#b99561"/>
+    </pattern>
+    <filter id="gasSoft" x="-30%" y="-50%" width="160%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+    <clipPath id="floorClip"><path d="M90 118H331L359 145V246H398V346H359V459L331 489H90L66 464V143Z"/></clipPath>
+    <g id="smallRock">
+      <path d="m-16 5-19 19 26 2 21-13Z" fill="#11191d" opacity=".6"/>
+      <path d="m-17 3 7-12 18-2 12 12-5 13-20 3Z" fill="#83583e" stroke="#704a38" stroke-width="1.2"/>
+      <path d="m-17 3 13 1L8-11-10-9Z" fill="#d39a63"/>
+      <path d="m-4 4 19 10 5-13L8-11Z" fill="#ac714b"/>
+      <path d="M-5 17-4 4-17 3" fill="#674638"/>
+    </g>
+    <g id="pebble"><path d="m-5 1 3-4 6 1 3 5-6 3-6-2Z" fill="#79513b"/><path d="m-5 1 5 1 4-4-6-1Z" fill="#dfac75"/></g>
+    <g id="crater">
+      <ellipse cy="3" rx="24" ry="13" fill="#d09963"/>
+      <ellipse rx="24" ry="13" fill="#855840"/>
+      <path d="M-23 0C-17-14 16-16 24-1 13-6-10-8-23 0Z" fill="#513e34"/>
+      <ellipse cx="1" cy="3" rx="15" ry="7" fill="#a26c49"/>
+      <path d="M-21 5C-8 17 15 15 23 3" fill="none" stroke="#e0a66b" stroke-width="2" opacity=".7"/>
+    </g>
+    <g id="bolt"><circle r="3" fill="#11191d"/><path d="M-1.7 0h3.4" stroke="#a6b3a8" stroke-width="1"/></g>
+  </defs>
+
+  <!-- Low sun and broken mineral strata establish the terrain, without a UI grid. -->
+  <rect width="1200" height="640" fill="url(#groundTone)"/>
+  <path d="M455 0 407 99 445 155 518 188 596 161 628 101 751 71 783 0Z" fill="#be8555"/>
+  <path d="m606 0-22 103 47 49 65-46 93-20 49-86Z" fill="#d39760" opacity=".42"/>
+  <path d="M398 455 534 441 628 489 729 498 817 585 888 640H397Z" fill="#bf8253" opacity=".55"/>
+  <path d="m669 165 34 45-17 91 46 73 156 35 48-32 119 30 74-54 71 40V86l-91 4-57 43-118-26-65 37Z" fill="#c98c57" opacity=".48"/>
+  <path d="M729 370 883 359 944 403 929 441 778 455 680 401Z" fill="#945b40" opacity=".58"/>
+  <path d="M0 531 169 547 260 580 367 575 507 640H0Z" fill="#614537"/>
+  <rect width="1200" height="640" fill="url(#regolith)"/>
+
+  <!-- Fine surface fractures and worn tracks. -->
+  <g fill="none" stroke="#714d39" stroke-linecap="round" stroke-linejoin="round" opacity=".52">
+    <path d="m460 70 24 13 9 21 31 12 7 20 37 8 24-9" stroke-width="2"/>
+    <path d="m501 109 10-18 26-4m-17 44-15 11-6 22"/>
+    <path d="m717 44 12 32 31 13 9 24m-15-26 13-16 30 2" stroke-width="1.8"/>
+    <path d="m1129 179-23 18 2 26-19 9-1 26 24 26m-5-87 20 12 17-5" stroke-width="2"/>
+    <path d="m646 510 24 9 14 22 25 5 19 29 28-4m-47-25 8-14 25-4" stroke-width="2"/>
+    <path d="m824 604 23-24 32 3 22-17 37 13 21-12m-76 17 4 31 15 12" stroke-width="2"/>
+    <path d="m455 562 30 4 17 15 27-3 20 20m-48-17 5-20 18-5"/>
+    <path d="m1056 347 13 15 26-2 19 25 36-3 16 16" stroke-width="2"/>
+  </g>
+  <path d="M376 297C433 310 441 367 505 391S555 427 625 436" fill="none" stroke="#d1b189" stroke-opacity=".23" stroke-width="58" stroke-linecap="round"/>
+  <path d="M386 297C437 316 451 359 505 391S562 416 598 418" fill="none" stroke="#e6c9a2" stroke-opacity=".16" stroke-width="28" stroke-linecap="round"/>
+  <path d="M574 400C632 382 647 327 683 274S683 147 770 114 956 90 1044 144 1126 265 1065 328 844 380 746 343 685 289 692 239" fill="none" stroke="#e2bd89" stroke-width="29" opacity=".13" stroke-linecap="round"/>
+  <path d="M587 429C663 451 691 476 766 485S886 544 958 541" fill="none" stroke="#e7c299" stroke-width="27" opacity=".07" stroke-linecap="round"/>
+
+  <!-- Far rim: faceted rocks cast consistently long shadows to the lower left. -->
+  <path d="M421 0H671L637 56 563 110 448 147 343 199 283 148 330 79Z" fill="#11191d" opacity=".8"/>
+  <path d="m389 0-17 47 31 22 73-9 30-35 60 15 44-19 50 7 17-28Z" fill="#835439"/>
+  <path d="m389 0-17 47 53-16 51 29 30-35 60 15-2-40Z" fill="#c58c58"/>
+  <path d="m425 31 32-31h107l2 40-60-15-30 35Z" fill="#e0a86c"/>
+  <path d="m405 51 15-12 40 15m52-41 20 11 31 5m27-7 20-9 31 6" fill="none" stroke="#f4ce91" stroke-opacity=".45" stroke-width="2"/>
+  <path d="M798 0H1200V62l-61 28-97-8-62 29-111-4-106 46-80-8 96-102Z" fill="#11191d" opacity=".68"/>
+  <path d="M851 0 822 24 824 52 873 67 933 40 986 65 1045 41 1106 57 1139 42 1200 54V0Z" fill="#805137"/>
+  <path d="m851 0-29 24 51 43 42-41 18 14 53 25 14-33 45 9 27-41Z" fill="#bb7f4f"/>
+  <path d="m873 67 42-41-27-26h-37l-29 24Z" fill="#d99b5e"/>
+  <path d="m986 65 14-33 27-32h45l-27 41Z" fill="#db9d61"/>
+  <path d="m1106 57 11-42 45-15h38v54l-61-12Z" fill="#ce9057"/>
+  <path d="m847 34 23 21 44-27m92-4 26-15m79 35 10-21 21-9" fill="none" stroke="#f4cf94" stroke-opacity=".4" stroke-width="2"/>
+
+  <!-- Left outcrop and exterior base foundations. -->
+  <path d="M0 79 44 53 98 75 105 135 52 211 0 239Z" fill="#11191d" opacity=".68"/>
+  <path d="M0 55 39 33 70 48 84 90 49 110 0 94Z" fill="#af754d"/>
+  <path d="M0 55 39 33 29 82 0 94Z" fill="#cc9563"/>
+  <path d="m29 82 41-34 14 42-35 20Z" fill="#775039"/>
+  <path d="M77 106H346L386 145V249l33 34v57l-33 29v106l-35 47H72l-37-42V143Z" fill="#11191d"/>
+  <path d="M67 128 88 109H333l38 38v112l35 28v46l-35 22v112l-31 42H80l-33-35V152Z" fill="#b8b7a0" stroke="#26383a" stroke-width="3"/>
+  <path d="M47 151 30 172v325l38 39h269l34-27H80l-33-35Z" fill="#11191d"/>
+  <path d="M90 118H331L359 145V246H398V346H359V459L331 489H90L66 464V143Z" fill="url(#floorTone)"/>
+  <g clip-path="url(#floorClip)">
+    <path d="M77 130H348V478H78Z" fill="none" stroke="#92a59a" stroke-opacity=".15" stroke-width="2"/>
+    <path d="M87 292H366M94 128V481M239 124V483M348 145V485M68 452H355" fill="none" stroke="#0d252b" stroke-width="2"/>
+    <path d="M69 244H355M69 338H354M157 118V483" fill="none" stroke="#65837d" stroke-opacity=".17"/>
+    <path d="M91 297H343V450H220V324H93" fill="none" stroke="#c6b990" stroke-opacity=".17" stroke-width="2"/>
+    <path d="M102 277h28m189 0h29M267 296v21m0 14v22" stroke="#f4e7d2" stroke-width="2" opacity=".32"/>
+    <path d="M113 127V229H207V437H348M102 127V238H197V446H348" fill="none" stroke="#0a1c21" stroke-width="4"/>
+    <path d="M112 127V229H207V437H348" fill="none" stroke="#76958a" stroke-width="1.4"/>
+    <path d="M126 128v32m3-28v21M313 442v28m-6-20v20" stroke="#ed6d3b" stroke-width="3" opacity=".8"/>
+    <g fill="#9bb2a8" opacity=".3"><circle cx="94" cy="292" r="2"/><circle cx="239" cy="292" r="2"/><circle cx="348" cy="292" r="2"/><circle cx="239" cy="452" r="2"/></g>
+    <path d="M71 160H90V228H71M329 139v10h24M330 456h24v21" fill="none" stroke="#acb6a0" stroke-opacity=".25" stroke-width="2"/>
+    <rect x="218" y="268" width="76" height="65" rx="7" fill="none" stroke="#8ea599" stroke-opacity=".15" stroke-dasharray="5 8"/>
+  </g>
+  <!-- The cutaway hull has readable material thickness rather than a flat card border. -->
+  <path d="M66 151V139l20-25h249l28 29v101h-14v-92l-24-25H93l-14 18v110H66Z" fill="url(#wallFace)" stroke="#1c3337" stroke-width="2"/>
+  <path d="M66 333h13v122l20 22h225l25-24V348h14v112l-30 30H90l-24-26Z" fill="#869790" stroke="#1c3337" stroke-width="2"/>
+  <path d="M86 114h249l28 29m-270-16h232l24 25M79 455l20 22h225" fill="none" stroke="#f4e7d2" stroke-width="3" opacity=".72"/>
+  <path d="M66 255h13v78H66Z" fill="#637d79"/><rect x="67" y="263" width="11" height="61" fill="url(#ventSlats)"/>
+  <path d="M86 110v-9h39v11m141-2v-9h39v11M83 492v9h39v-10m145 0v10h39v-10" fill="#294147" stroke="#13292e" stroke-width="2"/>
+  <g fill="#192d32"><rect x="142" y="109" width="49" height="9" rx="2"/><rect x="213" y="109" width="35" height="9" rx="2"/><rect x="133" y="487" width="70" height="10" rx="2"/></g>
+  <g stroke="#9fafa3" stroke-width="1.5"><path d="M148 111v5m7-5v5m7-5v5m7-5v5m7-5v5m7-5v5M140 490v5m8-5v5m8-5v5m8-5v5m8-5v5m8-5v5m8-5v5"/></g>
+  <g><use href="#bolt" x="91" y="120"/><use href="#bolt" x="327" y="120"/><use href="#bolt" x="72" y="157"/><use href="#bolt" x="356" y="166"/><use href="#bolt" x="73" y="452"/><use href="#bolt" x="100" y="484"/><use href="#bolt" x="325" y="484"/><use href="#bolt" x="356" y="427"/></g>
+
+  <!-- Repair machinery: exposed capillary pipework and a missing component socket. -->
+  <g id="repairMachine">
+    <path d="M104 159h92v61l-15 17H90v-58Z" fill="#0a1b20" opacity=".7"/>
+    <path d="M114 147h78v63h-78Z" fill="#3d5756" stroke="#10282d" stroke-width="2"/>
+    <path d="M113 147h79l10 10v54l-10 9h-79Z" fill="#6a827b" stroke="#10282d" stroke-width="2"/>
+    <path d="M113 147h79l10 10h-79Z" fill="#b7c0ad"/>
+    <path d="M123 158h66v49h-66Z" fill="#192f34" stroke="#a9b5a2" stroke-width="1.5"/>
+    <rect x="134" y="165" width="21" height="30" rx="3" fill="#0c1d23" stroke="#7b9487"/>
+    <path d="M141 169v22m8-22v22" stroke="#334c4e" stroke-width="2"/>
+    <path d="M165 164v35m8-35v35m8-35v35" stroke="#b28558" stroke-width="4"/>
+    <path d="M164 165h20m-20 33h20" stroke="#d3b783" stroke-width="3"/>
+    <path d="M106 164h-8v34h12m91-26h8v25h-8" fill="none" stroke="#849c8b" stroke-width="5"/>
+    <path d="M131 213h17m12 0h17" stroke="#132b2f" stroke-width="3"/>
+    <circle cx="185" cy="211" r="3" fill="#ed6d3b"/>
+    <rect x="123" y="143" width="20" height="4" fill="#1d363a"/>
+    <path d="M193 188h20v62h-73v-18" fill="none" stroke="#0c2026" stroke-width="6"/>
+    <path d="M193 188h20v62h-73v-18" fill="none" stroke="#889479" stroke-width="2"/>
+    <rect x="109" y="223" width="19" height="8" rx="2" fill="#9bad9b" transform="rotate(-12 118 227)"/>
+  </g>
+
+  <!-- Analog mission console, naturally oriented toward the centre of the room. -->
+  <g id="missionConsole">
+    <path d="M262 171h80v64h-90Z" fill="#0b2026" opacity=".7"/>
+    <path d="M272 160h69v55h-69Z" fill="#455e59" stroke="#102a2e" stroke-width="2"/>
+    <path d="M272 160h69l8 9v40l-8 6h-69Z" fill="#819389" stroke="#183237" stroke-width="2"/>
+    <path d="M272 160h69l8 9h-77Z" fill="#c7c9b4"/>
+    <rect x="278" y="168" width="50" height="26" rx="3" fill="#0b252b" stroke="#a4b8a5" stroke-width="2"/>
+    <path d="m283 182 6-2 7 6 7-11 5 5h14" fill="none" stroke="#73c8c1" stroke-width="1.5"/>
+    <path d="M283 174h12m14 0h13" stroke="#476b68" stroke-width="1"/>
+    <rect x="333" y="169" width="8" height="24" rx="1" fill="url(#ventSlats)"/>
+    <path d="M275 198h70l-5 16h-73Z" fill="#a4b3a0"/>
+    <g fill="#294447"><rect x="278" y="201" width="5" height="3"/><rect x="285" y="201" width="5" height="3"/><rect x="292" y="201" width="5" height="3"/><rect x="299" y="201" width="5" height="3"/><rect x="278" y="207" width="26" height="3"/></g>
+    <circle cx="315" cy="204" r="3.5" fill="#ed6d3b"/><circle cx="327" cy="204" r="3.5" fill="#17363a"/>
+    <path d="M322 216v17h12v-17" fill="#192f34" stroke="#758f82"/>
+    <path d="M338 160v-15h-36v-13" fill="none" stroke="#111f23" stroke-width="4"/>
+    <path d="M337 160v-15h-35v-13" fill="none" stroke="#b79b6b" stroke-width="1"/>
+  </g>
+
+  <!-- A low archive cabinet and a folded chart, not an interface panel. -->
+  <g id="archiveCabinet">
+    <path d="m105 333 81-2v64l-15 18H99Z" fill="#0a1d23" opacity=".6"/>
+    <path d="M121 329h67v64h-67Z" fill="#5f7872" stroke="#142d32" stroke-width="2"/>
+    <path d="M121 329h67l8 8v49l-8 7h-67Z" fill="#83998b" stroke="#142d32" stroke-width="2"/>
+    <path d="M121 329h67l8 8h-75Z" fill="#b9c1ab"/>
+    <path d="M125 341h64v14h-64Zm0 17h64v14h-64Zm0 17h64v14h-64Z" fill="#526c65" stroke="#233d40"/>
+    <path d="M148 347h18m-18 17h18m-18 17h18" stroke="#d4d5bc" stroke-width="3"/>
+    <path d="m137 329 1-24 25 3 5 22Z" fill="#ded4b8" stroke="#1c3638" stroke-width="1.4"/>
+    <path d="m143 311 5 7 6-4 7 9m-13-12v17" stroke="#8f9780" fill="none" stroke-width="1"/>
+    <rect x="181" y="338" width="6" height="49" fill="#19363a" opacity=".35"/>
+  </g>
+
+  <!-- Portable equipment case, straps, and a wall oxygen manifold. -->
+  <g id="fieldKit">
+    <path d="m279 370 54-6 3 39-18 16-54-5Z" fill="#0b2025" opacity=".7"/>
+    <path d="m289 365 45 2 4 37-47-1Z" fill="#b08c5c" stroke="#162e32" stroke-width="2"/>
+    <path d="m284 367 44 2 5 28-45-2Z" fill="#d0b486" stroke="#163137" stroke-width="2"/>
+    <path d="m288 395 45 2 5 7-47-1Z" fill="#8b6e49"/>
+    <path d="m292 369 3 27m24-26 3 27" stroke="#3e514b" stroke-width="6"/>
+    <path d="m301 366v-5l13 1v5" fill="none" stroke="#1a3539" stroke-width="4"/>
+    <path d="m302 380 12 1m-6-6 1 11" stroke="#f4e7d2" stroke-width="3"/>
+    <circle cx="335" cy="371" r="3" fill="#ed6d3b"/>
+    <path d="M330 442v-20h12v20m-22 0v-23h-12v23" fill="#6b8d82" stroke="#153137" stroke-width="2"/>
+    <path d="M312 419v-8h20v11m-15-10v-7" fill="none" stroke="#babf9f" stroke-width="2.5"/>
+    <circle cx="317" cy="408" r="4" fill="#f4e7d2" stroke="#213d3f"/>
+    <path d="m316 408 2-2" stroke="#ed6d3b" stroke-width="1.5"/>
+  </g>
+
+  <!-- Open airlock and exterior ramp; the player's starting area stays unobstructed. -->
+  <path d="M348 250h49l23 24v55l-23 16h-49Z" fill="#34494a" stroke="#14282d" stroke-width="3"/>
+  <path d="M358 263h37l15 15v45l-15 10h-37Z" fill="#829084"/>
+  <path d="M357 276h54m-54 8h54m-54 8h54m-54 8h54m-54 8h54m-54 8h54m-54 8h45" stroke="#566f67" stroke-width="2"/>
+  <path d="M352 253h45v12h-45Zm0 79h45v12h-45Z" fill="url(#hatchStripes)" stroke="#132a2f" stroke-width="2"/>
+  <path d="M350 256v75m8-62v57" stroke="#d8d4b9" stroke-width="4"/>
+  <path d="M411 278 432 294v31l-20-1Z" fill="#b2aa8c" stroke="#263c3e" stroke-width="2"/>
+  <path d="M415 287 428 297m-13-2 13 10m-13-2 13 10" stroke="#6c7d70" stroke-width="2"/>
+
+  <g id="baseLights" fill="#efb36c" stroke="#ffe6aa" stroke-width="1">
+    <rect x="98" y="129" width="27" height="4" rx="1"/>
+    <rect x="248" y="129" width="27" height="4" rx="1"/>
+    <rect x="89" y="465" width="24" height="4" rx="1"/>
+    <rect x="268" y="470" width="24" height="4" rx="1"/>
+    <rect x="371" y="252" width="16" height="4" rx="1"/>
+    <rect x="371" y="340" width="16" height="4" rx="1"/>
+    <circle cx="129" cy="203" r="2.5"/><circle cx="333" cy="210" r="2"/>
+    <path d="M89 133h42l13 28H85Z" stroke="none" opacity=".09"/>
+    <path d="M242 133h39l10 30h-54Z" stroke="none" opacity=".09"/>
+  </g>
+
+  <!-- The cliff overhang supplies the safe, deep shadow outside the airlock. -->
+  <path d="M470 177 547 197 623 214 689 260 670 318 605 367 575 460 492 495 421 482 412 377 414 309 460 240Z" fill="#11191d" opacity=".87"/>
+  <path d="m476 200 52 24 56 16 60 43-37 28-76 65-61 25-34-35 4-58Z" fill="#244046" opacity=".26"/>
+  <path d="m465 150 68 5 34 26 70-6 54 55-17 48-59 12-55-29-55 3-48-30-16-34Z" fill="#724b36" stroke="#513d30" stroke-width="2"/>
+  <path d="m465 150 68 5 34 26-33 35-77 18-16-34Z" fill="#bd8452"/>
+  <path d="m533 155 34 26 70-6 54 55-77 8-54 23-26-45Z" fill="#d0955b"/>
+  <path d="m614 238 77-8-17 48-59 12-55-29Z" fill="#8b583c"/>
+  <path d="m465 167 46 7 13 21-26 7-17 17m92-26 53-3 26 31-35 3-21 16" fill="none" stroke="#e7b879" stroke-width="2" opacity=".55"/>
+  <path d="m465 215 18-20 34 6m23 29 17 18 41-10m48 6 16 8-7 14" fill="none" stroke="#724735" stroke-width="2"/>
+  <path d="m575 293-17 21-22 3m66-15-30 25-3 28m-66-29-19 31-25 7" stroke="#95a19a" stroke-width="1" opacity=".13" fill="none"/>
+
+  <!-- A field observation instrument at the edge of the shadow. -->
+  <g id="observationInstrument">
+    <path d="m576 342-43 49 17 8 38-40Z" fill="#0a1419" opacity=".55"/>
+    <path d="m574 345-12 31m15-31 11 31m-13-31v39" stroke="#11191d" stroke-width="5" stroke-linecap="round"/>
+    <path d="m574 345-12 31m15-31 11 31m-13-31v39" stroke="#9bada1" stroke-width="2" stroke-linecap="round"/>
+    <ellipse cx="575" cy="342" rx="13" ry="6" fill="#d6cdb1" stroke="#213a3c" stroke-width="2"/>
+    <path d="M575 342v-15l15-12" fill="none" stroke="#c2b895" stroke-width="4"/>
+    <path d="m580 314 9-8 17 13-10 10Z" fill="#bec3ab" stroke="#193237" stroke-width="2"/>
+    <path d="m597 316 8 6-9 7-6-6Z" fill="#142f34"/><path d="m599 320 3 2-6 4" stroke="#73c8c1" fill="none" stroke-width="2"/>
+    <path d="M564 340h-7v12h10" fill="none" stroke="#ed6d3b" stroke-width="2"/>
+  </g>
+
+  <!-- First basin: the elliptical clearing leaves room for the robot's looping route. -->
+  <path d="M756 225c4-56 77-90 148-86 85-5 159 31 159 78 7 51-73 98-161 97-97 2-154-36-146-89Z" fill="#845641" opacity=".65"/>
+  <path d="M770 224c0-43 59-75 130-74 75-1 130 30 130 74s-58 76-130 76-130-33-130-76Z" fill="#d4a870" stroke="#e5bd86" stroke-width="2"/>
+  <path d="M778 224c4-36 55-64 123-62 71-2 122 23 121 61s-54 66-122 66c-70 0-122-28-122-65Z" fill="#4c554c"/>
+  <path d="M783 223c6-35 65-60 119-57 68-1 113 20 115 58-8 33-54 57-115 58-61 0-110-22-119-59Z" fill="url(#poolDepth)"/>
+  <path d="M787 215c24-31 77-45 134-39 46 4 74 17 90 36-9-32-50-48-109-46-54-3-111 19-119 54Z" fill="#11191d"/>
+  <path d="M795 244c35 30 85 39 143 25 31-5 55-15 69-29-9 22-47 39-101 42-48 0-90-13-111-38Z" fill="#a5ad8f" opacity=".55"/>
+  <g fill="none" stroke="#c7d4b4" opacity=".48" stroke-linecap="round">
+    <path d="M828 231c21 19 53 24 86 20m-60-38c25-14 61-11 77 2m-54 20c11 4 30 2 41-4" stroke-width="1.6"/>
+    <path d="M950 233c11-2 16-6 20-13m-134-14c7-5 11-7 18-8M864 269h18"/>
+  </g>
+  <g fill="#bfc4a4" stroke="#354746" stroke-width="1.3">
+    <path d="m809 207 8-13 9 3 2 17-15 2Z"/><path d="m960 254 4-14 12-2 7 9-8 12Z"/>
+    <path d="m901 179 4-10 8 4 5 10-11 2Z"/><path d="m855 276 1-9 9-4 8 9-8 8Z"/>
+  </g>
+  <path d="m808 157 12-6m180 112 13-4m-104 47 17-1m-150-77-12 1" fill="none" stroke="#f4d5a2" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+
+  <g id="poolGas">
+    <ellipse cx="914" cy="211" rx="169" ry="95" fill="url(#gasTint)"/>
+    <g fill="none" stroke="#e9cba0" stroke-linecap="round" filter="url(#gasSoft)">
+      <path d="M806 200c32-27 63 18 105-2s71-1 99-14" stroke-width="17" opacity=".3"/>
+      <path d="M817 237c35-15 51 10 79-4s65 7 99-9" stroke-width="14" opacity=".29"/>
+      <path d="M831 167c27-17 39 2 66-8s40-2 62-14" stroke-width="12" opacity=".23"/>
+    </g>
+    <g fill="none" stroke="#ead2af" stroke-linecap="round" opacity=".17">
+      <path d="M803 195c33-14 59 14 97-2s65-4 90-17" stroke-width="3"/>
+      <path d="M835 231c31-12 47 10 79-2s56 4 77-9" stroke-width="2.5"/>
+      <path d="M857 165c25-8 43 1 66-10" stroke-width="2"/>
+    </g>
+  </g>
+
+  <!-- Secondary ridge and hidden collection hollow. -->
+  <path d="m978 398 85 5 29 25 65-8 43 25v65l-101 25-100 15-51 24-47-12-46-39 62-68Z" fill="#11191d" opacity=".77"/>
+  <path d="m974 390 61-10 47 22 68-4 50 29v36l-53 14-49-7-49-29-53 10-44-29Z" fill="#744b36" stroke="#5c4132" stroke-width="2"/>
+  <path d="m974 390 61-10 47 22-34 23-52 26-44-29Z" fill="#c28b58"/>
+  <path d="m1082 402 68-4 50 29-53 12-49 31-50-45Z" fill="#d19760"/>
+  <path d="m1147 439 53-12v36l-53 14-49-7Z" fill="#8b5a3e"/>
+  <path d="m981 398 45-8 33 13m30 11 53-5 29 17m-164 13 33-19" fill="none" stroke="#eac18a" stroke-width="2" opacity=".6"/>
+  <path d="M951 534c5-32 39-52 79-49 46-3 84 16 85 44 1 32-38 56-84 54-50 1-79-19-80-49Z" fill="#9a7b59"/>
+  <path d="M963 532c0-23 30-40 68-40 36-1 65 16 66 38s-27 40-65 41-70-15-69-39Z" fill="#c5b58a"/>
+  <path d="M969 531c3-21 29-34 63-33 33 0 58 11 59 31-2 22-28 35-60 35-33-1-57-12-62-33Z" fill="url(#poolDepth)" stroke="#526963" stroke-width="2"/>
+  <path d="M974 521c24-24 72-27 102-5-12-19-68-27-96-6Z" fill="#0f2227"/>
+  <path d="M985 546c23 15 64 13 83-4" fill="none" stroke="#becbb0" stroke-width="2" opacity=".55"/>
+  <path d="M1012 532c13-7 25-5 34 0m-14 16 19-4" fill="none" stroke="#73c8c1" stroke-width="1.5" opacity=".5"/>
+  <g fill="#bfc4a4" stroke="#344443" stroke-width="1.2"><path d="m973 538 8-13 10 4-1 13-12 3Z"/><path d="m1070 552 3-11 10-1 5 9-10 7Z"/></g>
+  <path d="m954 580-13 9 32 6 35-13m81-5 18-9 22 6" fill="none" stroke="#dcad75" stroke-width="2" opacity=".5"/>
+
+  <!-- Geological details, placed outside the authored walking endpoints. -->
+  <g>
+    <use href="#crater" x="653" y="91" transform="rotate(-11 653 91) scale(1)"/>
+    <use href="#crater" x="777" y="410"/>
+    <use href="#crater" x="1119" y="123"/>
+    <use href="#crater" transform="translate(684 582) scale(1.45)"/>
+    <use href="#crater" transform="translate(474 509) scale(.63)"/>
+    <use href="#crater" transform="translate(1169 316) scale(.76)"/>
+    <use href="#crater" transform="translate(836 80) scale(.6)"/>
+    <use href="#crater" transform="translate(70 585) scale(1.1)"/>
+  </g>
+  <g>
+    <use href="#smallRock" transform="translate(1184 176) scale(1.8) rotate(-10)"/>
+    <use href="#smallRock" transform="translate(1110 331) scale(1.1) rotate(17)"/>
+    <use href="#smallRock" transform="translate(696 438) scale(.75) rotate(-18)"/>
+    <use href="#smallRock" transform="translate(607 544) scale(1.2) rotate(11)"/>
+    <use href="#smallRock" transform="translate(426 561) scale(1.8) rotate(15)"/>
+    <use href="#smallRock" transform="translate(894 450) scale(.6) rotate(3)"/>
+    <use href="#smallRock" transform="translate(745 69) scale(.65) rotate(21)"/>
+    <use href="#smallRock" transform="translate(680 140) scale(.55) rotate(-15)"/>
+    <use href="#smallRock" transform="translate(757 585) scale(.55)"/>
+    <use href="#smallRock" transform="translate(1147 604) scale(2.2) rotate(-18)"/>
+    <use href="#smallRock" transform="translate(336 568) scale(.8) rotate(20)"/>
+    <use href="#smallRock" transform="translate(26 342) scale(.7)"/>
+    <use href="#smallRock" transform="translate(449 103) scale(.7) rotate(31)"/>
+  </g>
+  <g opacity=".9">
+    <use href="#pebble" x="720" y="174"/><use href="#pebble" x="726" y="185"/><use href="#pebble" x="729" y="163"/>
+    <use href="#pebble" x="641" y="374"/><use href="#pebble" x="631" y="387"/><use href="#pebble" x="652" y="383"/>
+    <use href="#pebble" x="842" y="433"/><use href="#pebble" x="832" y="446"/>
+    <use href="#pebble" x="1099" y="287"/><use href="#pebble" x="1108" y="275"/>
+    <use href="#pebble" x="805" y="560"/><use href="#pebble" x="815" y="565"/><use href="#pebble" x="798" y="573"/>
+    <use href="#pebble" x="473" y="464"/><use href="#pebble" x="464" y="478"/>
+    <use href="#pebble" x="1130" y="534"/><use href="#pebble" x="1120" y="548"/><use href="#pebble" x="1140" y="542"/>
+    <use href="#pebble" x="550" y="108"/><use href="#pebble" x="538" y="117"/>
+    <use href="#pebble" x="369" y="534"/><use href="#pebble" x="355" y="529"/>
+  </g>
+
+  <!-- A compact evacuation crawler waits on the exterior apron. -->
+  <g id="evacuationCraft">
+    <path d="M86 499h74l21 54-12 17H67l-9-16Z" fill="#7a7160" opacity=".65"/>
+    <path d="M91 504h61l20 46-6 11H72l-4-10Z" fill="none" stroke="#c0aa83" stroke-width="2" opacity=".6"/>
+    <path d="M93 516h59l4 31-23 18H68l11-37Z" fill="#11191d" opacity=".66"/>
+    <path d="M86 511h61v9H86Zm0 29h61v10H86Z" fill="#18282b" stroke="#708175" stroke-width="2"/>
+    <path d="M92 512v7m8-7v7m8-7v7m8-7v7m8-7v7m8-7v7m8-7v7M92 542v6m8-6v6m8-6v6m8-6v6m8-6v6m8-6v6m8-6v6" stroke="#718077" stroke-width="2"/>
+    <path d="M88 516h51l25 13-25 15H88l-9-8v-12Z" fill="#97a797" stroke="#132a30" stroke-width="2"/>
+    <path d="M89 516h50l21 12-24 7H89l-7-8Z" fill="#d7d3b6"/>
+    <path d="M111 520h27l14 8-19 8h-22Z" fill="#29494c" stroke="#79978b" stroke-width="1.5"/>
+    <path d="M119 521v13m16-12 8 5-10 5" stroke="#73c8c1" stroke-width="1.5" opacity=".75" fill="none"/>
+    <path d="M88 520h16v16H88Z" fill="#7d9181" stroke="#4b655d"/>
+    <path d="M93 523v11m6-11v11" stroke="#314b49" stroke-width="2"/>
+    <path d="M153 522l4 2m-4 13 4-3" stroke="#efb36c" stroke-width="3"/>
+    <path d="M80 524h-5v11h5" fill="#ed6d3b" stroke="#203537" stroke-width="2"/>
+    <path d="M105 518v-7m-4 1h8" stroke="#b6c4ad" stroke-width="2"/>
+    <path d="M113 505v-12m13 12v-12" stroke="#9caa95" stroke-width="1.5" opacity=".4"/>
+  </g>
+
+  <!-- Foreground rims crop naturally into the frame, giving the map a world beyond it. -->
+  <path d="M0 625 78 615 117 637 186 621 250 640H0Z" fill="#282c29"/>
+  <path d="m1001 640 19-29 55-11 51 24 32-8 42 14v10Z" fill="#664837"/>
+  <path d="m1020 611 55-11 51 24-25 16h-53Z" fill="#a7754f"/>
+  <path d="m1182 368 18-13v75l-26-24Z" fill="#dda068"/>
+  <path d="m1182 368-19 47 11-9 26 24Z" fill="#81543b"/>
+
+  <!-- The game reveals this route only after the collection decision. -->
+  <g id="collectionTrail" opacity="0" fill="none" stroke-linecap="round">
+    <path d="M510 420C581 423 647 464 760 480S907 538 998 537" stroke="#11191d" stroke-width="10" opacity=".7"/>
+    <path d="M510 420C581 423 647 464 760 480S907 538 998 537" stroke="#73c8c1" stroke-width="3.5" stroke-dasharray="3 13"/>
+    <path d="m988 529 12 8-13 7" stroke="#b6e5d6" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+</svg>
