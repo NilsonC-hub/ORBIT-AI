@@ -1,0 +1,418 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#082f39"><meta name="description" content="ORBIT AI 第四课家长版：认识 AI 幻觉、上下文，以及使用 AI 时对结果和自己能力的误判。"><meta name="copyright" content="ORBIT AI"><title>ORBIT AI · 第四课 · 看见不存在的东西 · 家长版</title><link rel="icon" href="../../assets/brand/orbit-ai-emblem.svg"><style>@font-face{font-family:"Noto SC";src:url("assets/fonts/noto-sc.woff2") format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Bricolage";src:url("assets/fonts/bricolage.woff2") format("woff2");font-weight:200 800;font-stretch:75% 100%;font-display:swap}
+/* ORBIT AI · L04 幻觉 · Claude 版
+   视觉规则：双色印刷。蓝 = 真实存在；荧光粉 = 不存在 / 幻觉。两色叠印产生紫。 */
+
+:root {
+  --paper: #ecede7;
+  --paper-2: #e2e4dc;
+  --ink: #1b2456;
+  --blue: #2d4fb4;
+  --blue-soft: #c9d3ef;
+  --pink: #ff4fa3;
+  --pink-soft: #ffd0e6;
+  --yellow: #ffd23f;
+  --mute: #7d849c;
+  /* 中文只用一套思源黑体，层级靠字重；设计感交给西文字体 */
+  --display: "Bricolage", "Noto SC", sans-serif;
+  --body: "Noto SC", sans-serif;
+  --type: "Courier Prime", "Noto SC", monospace;
+  --latin: "Bricolage", "Noto SC", sans-serif;
+  --name: "Instrument Serif", "Noto SC", serif;
+  --dot-blue: radial-gradient(circle, var(--blue) 1.6px, transparent 1.9px) 0 0 / 7px 7px;
+  --dot-pink: radial-gradient(circle, var(--pink) 1.6px, transparent 1.9px) 0 0 / 7px 7px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #c9cbc3; }
+body { font-family: var(--body); color: var(--ink); -webkit-font-smoothing: antialiased; }
+body { -webkit-user-select: none; user-select: none; }
+input, textarea, [contenteditable=""], [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+
+/* 1600×900 固定舞台，整体缩放适配窗口 */
+#stage { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform-origin: center center; }
+.slide {
+  position: absolute; inset: 0; overflow: hidden; display: none;
+  background: var(--paper);
+  /* 纸张纤维：极淡的噪点 */
+  background-image: radial-gradient(circle at 20% 30%, rgba(27,36,86,.035) 0 1px, transparent 1.5px),
+                    radial-gradient(circle at 70% 80%, rgba(27,36,86,.03) 0 1px, transparent 1.5px);
+  background-size: 23px 23px, 31px 31px;
+}
+.slide.active { display: block; }
+.slide.night { background: #141a3d; color: #eef0ff; }
+
+/* 叠印：粉色层用 multiply 落在蓝色上会变紫 */
+.over { mix-blend-mode: multiply; }
+
+/* 重影标题：只用在"幻觉 / 不存在"相关的字上 */
+.ghost { position: relative; display: inline-block; }
+.ghost::after {
+  content: attr(data-ghost); position: absolute; left: 0; top: 0;
+  color: var(--pink); transform: translate(6px, 4px); mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.night .ghost::after { mix-blend-mode: screen; }
+
+.h-display { font-family: var(--display); font-weight: 900; letter-spacing: -.035em; line-height: 1.08; font-stretch: 85%; }
+.en { font-family: var(--name); font-style: italic; font-weight: 400; letter-spacing: 0; }
+.en-sans { font-family: var(--latin); }
+.zh-sub { display: block; font-family: var(--body); font-style: normal; font-size: .6em; color: var(--mute); letter-spacing: 0; }
+.say { font-size: 32px; line-height: 1.55; }
+.small { font-size: 22px; line-height: 1.5; color: var(--mute); }
+.src { position: absolute; left: 72px; bottom: 30px; font-size: 17px; color: var(--mute); max-width: 1000px; line-height: 1.4; }
+.src a { color: inherit; }
+.night .src { color: #8d93b8; }
+.tag-fake { color: var(--pink); }
+.tag-real { color: var(--blue); }
+
+/* 墨块按钮：像印在纸上的色块，按下时错位 */
+.ink-btn {
+  position: relative; display: inline-flex; align-items: center; gap: 14px;
+  padding: 16px 30px 18px; font-family: var(--display); font-weight: 800; font-size: 27px;
+  background: var(--blue); color: var(--paper); border-radius: 3px;
+  box-shadow: 6px 6px 0 var(--pink); transition: transform .12s, box-shadow .12s;
+}
+.ink-btn:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--pink); }
+.ink-btn:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--pink); }
+.ink-btn.pink { background: var(--pink); color: var(--ink); box-shadow: 6px 6px 0 var(--blue); }
+.ink-btn.line { background: transparent; color: var(--ink); border: 3px solid var(--ink); box-shadow: none; }
+.ink-btn[disabled] { opacity: .35; pointer-events: none; }
+.say-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 2px solid var(--ink); border-radius: 18px; background: #f7f7f2; font-size: 17px; vertical-align: middle; }
+.say-btn svg { width: 18px; height: 18px; fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.say-btn svg path:first-child { fill: var(--ink); }
+.say-btn:hover, .say-btn.playing { background: var(--yellow); }
+.ipa { font-family: "Segoe UI", "Lucida Sans Unicode", sans-serif; font-size: 22px; color: var(--mute); }
+.hidden { visibility: hidden; }
+.gone { display: none !important; }
+/* 正常世界：沿用 L03 / L04 正式开场的样式。只作用于 .slide.lg，并临时换回 L03 的变量 */
+.slide.lg {
+  --ink: #082733; --ink-soft: #435c63; --paper: #f6f7f1; --teal: #00a887; --cyan: #78d8e5;
+  --yellow: #ffc94d; --coral: #f26b5e; --line: rgba(8, 39, 51, .11);
+  --sans: "Segoe UI", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--sans); color: var(--ink);
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+.slide.lg.dark {
+  color: #f7fbf8; background-color: #082f39;
+  background-image: linear-gradient(rgba(120,216,229,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(120,216,229,.08) 1px, transparent 1px),
+    radial-gradient(circle at 74% 44%, rgba(0,168,135,.18), transparent 30%);
+}
+.lg .edge-frame { position: absolute; inset: 2.15%; border: 2px solid currentColor; opacity: .13; pointer-events: none; }
+.lg .kicker { margin: 0 0 20px; color: var(--teal); font-family: var(--mono); font-size: 21px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.lg.dark .kicker { color: var(--cyan); }
+.lg .display { margin: 0; font-size: 96px; line-height: 1; letter-spacing: -.05em; font-weight: 900; }
+.lg .subhead { margin: 26px 0 0; color: var(--ink-soft); font-size: 30px; line-height: 1.5; font-weight: 650; }
+.lg.dark .subhead { color: rgba(247,251,248,.72); }
+
+/* 封面 */
+.lg .brand-cover { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; }
+.lg .brand-cover::before, .lg .brand-cover::after { content: ""; position: absolute; left: 50%; top: 47%; border: 2px solid rgba(120,216,229,.22); border-radius: 50%; transform: translate(-50%,-50%) rotate(-12deg); }
+.lg .brand-cover::before { width: 67%; height: 58%; }
+.lg .brand-cover::after { width: 49%; height: 72%; border-color: rgba(255,201,77,.16); transform: translate(-50%,-50%) rotate(24deg); }
+.lg .brand-cover-logo { position: relative; z-index: 3; display: block; width: 760px; height: auto; }
+.lg .brand-cover-node { position: absolute; z-index: 2; width: 24px; aspect-ratio: 1; border: 3px solid var(--ink); border-radius: 50%; box-shadow: 0 0 0 2px rgba(255,255,255,.5); }
+.lg .brand-cover-node.one { left: 23%; top: 29%; background: var(--yellow); }
+.lg .brand-cover-node.two { right: 22%; top: 24%; background: var(--coral); }
+.lg .brand-cover-node.three { right: 29%; bottom: 23%; background: var(--teal); }
+.lg .cover-footer { position: absolute; left: 7.4%; bottom: 4.6%; display: flex; align-items: center; gap: 22px; font-family: var(--mono); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: rgba(247,251,248,.55); }
+.lg .cover-footer::before { content: ""; width: 80px; height: 4px; border-radius: 99px; background: var(--yellow); }
+
+/* 理念视频 */
+.lg .video-layout { position: absolute; inset: 0; padding: 6.7% 5.4% 5.4%; display: grid; grid-template-columns: 30% 1fr; gap: 3.4%; align-items: stretch; }
+.lg .video-copy { padding: 9% 4% 4% 3%; display: flex; flex-direction: column; justify-content: center; }
+.lg .brand-emblem-video { display: block; width: 92px; height: auto; margin: 0 0 9%; }
+.lg .video-copy h2 { margin: 0; font-size: 82px; line-height: .95; letter-spacing: -.05em; }
+.lg .video-frame { position: relative; overflow: hidden; align-self: center; aspect-ratio: 16 / 9; border: 3px solid rgba(247,251,248,.9); border-radius: 28px; background: #020c12; box-shadow: 14px 16px 0 rgba(0,0,0,.24); }
+.lg .video-frame video { width: 100%; height: 100%; display: block; object-fit: contain; }
+
+/* Existing L04 two-colour print system; parent edition is a curated reading deck. */
+:root{--mute:#555d7c}
+html,body{background:#c9cbc3;overscroll-behavior:none;-webkit-touch-callout:none}
+body{touch-action:pan-y}
+#stage{top:calc((100% - 62px)/2)}
+.slide.lg{--sans:"Noto SC","Microsoft YaHei",sans-serif}
+.slide.active{display:block}
+.slide[aria-hidden="true"]{display:none}
+.parent h1,.parent h2{font:850 76px/1.18 var(--display);letter-spacing:-.035em}
+.parent h3{font:850 45px/1.25 var(--display)}
+.parent .copy{position:absolute;left:104px;top:170px;width:720px}
+.parent .lead{font-size:34px;line-height:1.65;margin-top:38px}
+.parent .body-copy{font-size:29px;line-height:1.7;margin-top:30px;color:var(--mute)}
+.parent .lesson{font-size:25px;margin-bottom:32px;color:var(--blue)}
+.parent .fine-print{position:absolute;left:104px;bottom:60px;color:var(--mute);font-size:23px;line-height:1.5}
+.parent .bottom-line{position:absolute;left:0;right:0;bottom:126px;text-align:center;font-size:34px;font-weight:750}
+.story .copy{top:150px}
+.document-art{position:absolute;left:990px;top:170px;width:430px;height:586px;background:#f7f7f2;border:3px solid var(--ink);padding:42px;transform:rotate(5deg)}
+.document-art>p{font-weight:850;font-size:36px;border-bottom:3px solid var(--ink);padding-bottom:20px}
+.document-art>div{margin-top:27px}.document-art span{font-size:22px;color:var(--blue)}
+.document-art i{display:block;width:100%;height:9px;background:#c9d3ef;margin-top:16px}.document-art i:last-child{width:74%}
+.document-art strong{position:absolute;right:-38px;bottom:72px;border:4px solid var(--pink);padding:12px 26px;color:var(--ink);font-size:40px;background:var(--pink-soft);transform:rotate(-11deg)}
+.document-art figcaption{position:absolute;bottom:-44px;left:0;font-size:21px;color:var(--mute)}
+.concept-word{position:absolute;left:100px;top:180px}.concept-word h2{font-size:238px;font-weight:900;line-height:1.08}
+.concept-word .ghost::after{transform:translate(13px,9px)}.concept-word p{font:650 52px/1.3 var(--latin);margin-top:30px;color:var(--blue)}
+.definition-copy{position:absolute;left:850px;top:240px;width:650px}.definition-copy>p{font-size:42px;line-height:1.65;font-weight:650}
+.definition-rule{width:94px;height:7px;background:var(--pink);margin:40px 0}.definition-copy .aside{font-size:31px;color:var(--mute);font-weight:500}
+.two>h2,.context>h2,.ability>h2{position:absolute;left:104px;top:94px}
+.two-circles{position:absolute;left:190px;top:240px;width:1220px;height:430px;display:flex}
+.two-circles i{position:absolute;width:690px;height:430px;border:3px solid var(--blue);border-radius:50%;background:#c9d3ef90}
+.two-circles i+i{right:0;border-color:var(--pink);background:#ffd0e6a6;mix-blend-mode:multiply}
+.two-copy{position:absolute;top:355px;width:520px;text-align:center}.two-copy p{font-size:32px;line-height:1.7;margin-top:20px}.machine{left:230px}.human{right:230px}
+.context h2 span{font:500 44px var(--latin);color:var(--blue);margin-left:22px}.context>.lead{position:absolute;left:104px;top:194px;margin:0}
+.context-diagram{position:absolute;left:104px;right:104px;top:336px;height:260px;display:flex;gap:44px;align-items:center}
+.outside{width:265px;border:3px dashed #747b92;height:198px;text-align:center;padding-top:32px;color:var(--mute)}.outside span{font-size:30px;font-weight:750}.outside p{font-size:24px;line-height:1.6;margin-top:14px}
+.workspace{flex:1;border:3px solid var(--blue);padding:25px 30px 32px;background:#dbe2f1}.workspace>p{font-size:25px;color:var(--blue);margin-bottom:22px}.sheets{display:flex;gap:20px}.sheets>div{flex:1;background:#f7f7f2;border:2px solid var(--ink);padding:36px 8px;text-align:center;font-size:31px;font-weight:750}
+.context-explain{position:absolute;left:414px;top:654px;font-size:30px;line-height:1.65}
+.agreement-copy{position:absolute;left:840px;top:175px;width:650px}.agreement blockquote{font:800 82px/1.3 var(--display);color:var(--blue)}
+.check-lines{margin-top:68px}.check-lines p{font-size:29px;line-height:1.6;padding:17px 0;border-top:2px solid #bec6df}
+.ability-equations{position:absolute;left:104px;right:104px;top:240px}.ability-equations p{display:grid;grid-template-columns:1fr 125px 1fr;align-items:center;gap:25px;padding:26px 0;border-bottom:2px solid #bec6df;font-size:50px;font-weight:750}.ability-equations p span:last-child{text-align:right}.ability-equations b{color:var(--pink);font-size:86px;text-align:center;line-height:1}
+.ability-note{position:absolute;left:104px;right:104px;top:614px;display:flex;justify-content:space-between;font-size:34px;line-height:1.6}.ability-note strong{font-size:39px;font-weight:800}
+.game-teaser .copy{top:130px}.game-teaser .body-copy{color:#c8dedb;margin-top:22px;font-size:28px;line-height:1.55}.game-teaser .lead{color:#f7fbf8;margin-top:24px}.floppy-art{position:absolute;right:82px;top:164px;width:620px;height:620px}.floppy-art svg{width:100%;height:100%}
+#game-open{display:flex;align-items:center;gap:34px;margin-top:30px;padding:18px 28px;border:2px solid #ffc94d;border-radius:6px;background:#ffc94d;color:#082733;font:750 28px/1.4 var(--sans);cursor:pointer}
+#game-open:hover{background:#ffda85;border-color:#ffda85}#game-open:focus-visible{outline:4px solid #f7fbf8;outline-offset:6px}.game-device-note{margin-top:15px;color:#c8dedb;font-size:23px;line-height:1.5}
+#parent-game{position:fixed;inset:0;margin:0;padding:0;border:0;width:100%;height:100vh;height:100dvh;max-width:none;max-height:none;overflow:hidden;background:#080d16;color:#f7fbf8;font-family:"Noto SC","Microsoft YaHei",sans-serif}
+#parent-game[open]{display:flex;flex-direction:column}#parent-game::backdrop{background:#080d16}
+.game-bar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:16px;min-height:60px;padding:8px max(20px,env(safe-area-inset-right)) 8px max(20px,env(safe-area-inset-left));background:#082733;border-bottom:1px solid #41636c}
+.game-bar h2{font-size:16px;font-weight:700}.game-bar button{min-height:44px;padding:9px 18px;border:0;border-radius:6px;background:#ffc94d;color:#082733;font-family:inherit;font-weight:700;font-size:16px;line-height:1.4;white-space:nowrap;cursor:pointer}.game-bar button:focus-visible{outline:3px solid white;outline-offset:3px}
+#parent-game-frame{flex:1;min-height:0;width:100%;border:0;background:#080d16}.game-device-help{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding:24px;font-size:18px;line-height:1.7}.game-device-help strong{font-size:24px}.game-device-help p{max-width:32em;color:#c8dedb}
+@media(max-width:540px){.game-bar{padding-left:12px;padding-right:12px}.game-bar h2{font-size:14px}}
+.transfer .copy{top:155px}.transfer h2{font-size:83px}.feel-art{position:absolute;left:910px;top:200px;width:570px;height:540px}.feel-art span{font:850 310px/1 var(--latin);color:var(--blue)}.feel-art .ghost::after{transform:translate(17px,12px)}.feel-art b{font-size:180px;position:absolute;right:10px;bottom:0;transform:rotate(8deg)}
+.parent-toolbar{position:fixed;left:0;right:0;bottom:0;min-height:62px;padding:6px max(18px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:16px;background:#ecede7;color:var(--ink);z-index:50;border-top:1px solid #b7bdd0}
+.parent-toolbar a{color:inherit;text-decoration:none;font-size:14px;min-height:44px;display:flex;align-items:center}.parent-toolbar a:hover{text-decoration:underline}.parent-toolbar nav{display:flex;align-items:center;gap:12px}.parent-toolbar button{width:44px;height:44px;border:1px solid var(--ink);border-radius:50%;display:grid;place-items:center}.parent-toolbar button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}.parent-toolbar button:hover{background:var(--blue);color:white}.parent-toolbar button:disabled{opacity:.35;cursor:default}.parent-toolbar span{font:650 16px var(--latin);min-width:64px;text-align:center}.parent-toolbar small{font-size:13px}.parent-toolbar .tools{display:flex;gap:20px;align-items:center}
+body.on-lg{background:#061e27}.on-lg .parent-toolbar{background:#082f39;color:#f7fbf8;border-color:#48646b}.on-lg .parent-toolbar button{border-color:#78a0a9}
+.phase-rail{position:absolute;right:78px;top:32px;z-index:20;display:flex;gap:8px;align-items:center}.phase-rail p{margin-right:10px;font:500 19px var(--latin)}.phase-rail span{display:grid;place-items:center;width:35px;height:35px;border:1px solid #7d849c;border-radius:50%;font:650 19px var(--latin)}.phase-rail span.active{background:var(--blue);color:white;border-color:var(--blue)}.on-lg .phase-rail{color:#f7fbf8}.on-lg .phase-rail span.active{background:#ffc94d;border-color:#ffc94d;color:#082733}
+.orientation-guide{display:none;position:fixed;inset:0;z-index:100;background:#082f39;color:#f6f7f1;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;gap:24px}.orientation-guide img{width:min(78vw,320px);height:auto}.orientation-guide strong{font-size:28px}.orientation-guide p{font-size:17px;line-height:1.7}.orientation-guide svg{width:75px;height:75px;stroke:#78d8e5;fill:none;stroke-width:2}.orientation-guide a{color:#f6f7f1;min-height:44px;display:flex;align-items:center}
+[hidden]{display:none!important}
+@media(orientation:portrait) and (max-width:900px){.orientation-guide{display:flex}#stage,.parent-toolbar{visibility:hidden}}
+@media(max-height:520px){.parent-toolbar small{display:none}.parent-toolbar{min-height:56px;padding-top:3px;padding-bottom:max(3px,env(safe-area-inset-bottom))}.parent-toolbar a{font-size:12px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style></head><body>
+<div class="orientation-guide" role="status"><img src="../../assets/brand/orbit-ai-logo.svg" alt="ORBIT AI"><svg viewBox="0 0 80 80" aria-hidden="true"><rect x="13" y="22" width="54" height="36" rx="5"/><path d="M57 10a31 31 0 0 1 18 24M69 27l6 7 4-8M23 70A31 31 0 0 1 5 46M11 53l-6-7-4 8"/></svg><strong>请横屏观看</strong><p>旋转手机，展开本课的故事。<br>左右轻扫即可翻页。</p><a href="../">返回课程目录</a></div>
+<main id="stage" aria-label="ORBIT AI 第四课家长版"><section class="slide lg dark" id="lgCover" data-phase="" aria-label="ORBIT AI 通用封面">
+  <div class="edge-frame"></div>
+  <div class="brand-cover">
+    <span class="brand-cover-node one" aria-hidden="true"></span>
+    <span class="brand-cover-node two" aria-hidden="true"></span>
+    <span class="brand-cover-node three" aria-hidden="true"></span>
+    <img class="brand-cover-logo" src="../../assets/brand/orbit-ai-logo.svg" alt="ORBIT AI">
+  </div>
+  <div class="cover-footer">Enter with Wonder. Leave with Agency.</div>
+</section>
+<section class="slide lg dark" id="lgVideo" data-phase="" aria-label="ORBIT 概念视频">
+  <div class="edge-frame"></div>
+  <div class="video-layout">
+    <div class="video-copy">
+      <img class="brand-emblem-video" src="../../assets/brand/orbit-ai-emblem.svg" alt="ORBIT AI 标志">
+      <p class="kicker">Before the lesson</p>
+      <h2>进入<br><span style="color:var(--yellow)">ORBIT</span><br>学习轨道</h2>
+    </div>
+    <div class="video-frame">
+      <video controls playsinline preload="none" poster="../../assets/media/orbit-intro.jpg">
+        <source src="assets/orbit-intro-watermarked.mp4" type="video/mp4">
+        浏览器无法播放此视频，请直接打开原视频文件。
+      </video>
+    </div>
+  </div>
+</section>
+<section class="slide parent story" data-phase="O" aria-label="故事：一份看起来很专业的答案">
+  <div class="copy"><p class="lesson">第四课 · 看见不存在的东西</p><h1>写得像真的，<br>就是真的吗？</h1><p class="lead">2023 年，纽约。<br>一位律师把 AI 给出的案例<br>写进了法律文件。</p><p class="body-copy">有名字，有年份，也有编号。<br>一份看起来很专业的答案，<br>还需要检查什么？</p></div>
+  <figure class="document-art" aria-label="文件版式示意，不是真实法律文书"><p>参考案例</p><div><span>案件名称</span><i></i><i></i></div><div><span>引用编号</span><i></i></div><div><span>判决摘要</span><i></i><i></i><i></i></div><strong>待核实</strong><figcaption>版式示意</figcaption></figure>
+</section>
+<section class="slide parent definition" data-phase="R" aria-label="核心概念：AI 幻觉">
+  <div class="concept-word"><h2 class="ghost" data-ghost="幻觉">幻觉</h2><p lang="en">Hallucination</p></div>
+  <div class="definition-copy"><p>AI 生成了看起来可信，<br>实际却缺少事实依据<br>或不正确的内容。</p><div class="definition-rule"></div><p class="aside">说得清楚、说得肯定，<br>并不能证明是真的。</p></div>
+</section>
+<section class="slide parent two" data-phase="R" aria-label="AI 的幻觉与人的误信">
+  <h2>AI 会编，人也会误信。</h2>
+  <div class="two-circles" aria-hidden="true"><i></i><i></i></div>
+  <div class="two-copy machine"><h3>AI 的幻觉</h3><p>把不存在的事实，<br>说得像真的。</p></div>
+  <div class="two-copy human"><h3>人的“幻觉”</h3><p>把看起来可靠，<br>当成已经核实。</p></div>
+  <p class="bottom-line">一个很会说，一个太容易相信。</p><p class="fine-print">这里人的“幻觉”是比喻，指使用 AI 时的误判与过度自信。</p>
+</section>
+<section class="slide parent context" data-phase="B" aria-label="上下文：AI 这次回答能参考的东西">
+  <h2>上下文 <span lang="en">Context</span></h2><p class="lead">AI 这次回答能参考的对话和资料。</p>
+  <div class="context-diagram"><div class="outside"><span>更早的细节</span><p>可能已不在<br>这次参考范围里</p></div><div class="workspace"><p>这次能参考的内容</p><div class="sheets"><div>你的问题</div><div>对话内容</div><div>提供的资料</div></div></div></div>
+  <p class="context-explain">内容太长时，早先的细节可能不再被直接参考。<br>信息不够，AI 却仍可能给出一个错误答案。</p><p class="fine-print">上下文有限只是幻觉的一种原因；示意图不代表固定容量。</p>
+</section>
+<section class="slide parent agreement" data-phase="B" aria-label="迎合：更肯定不等于证据更多">
+  <div class="copy"><h2>更肯定，<br>不等于<br>证据更多。</h2><p class="body-copy">AI 有时会顺着提问者说。<br>被赞同的感觉，<br>不能代替核对事实。</p></div>
+  <div class="agreement-copy"><blockquote>“对，<br>您说得对。”</blockquote><div class="check-lines"><p>问出处，也打开原文看看。</p><p>重要的信息，换个来源核对。</p><p>允许回答是“还不知道”。</p></div></div>
+</section>
+<section class="slide parent ability" data-phase="B" aria-label="AI 的能力与自己的能力">
+  <h2>这一次做好了，然后呢？</h2><div class="ability-equations"><p><span>作品做出来了</span><b>≠</b><span>我已经会做了</span></p><p><span>这一次成功了</span><b>≠</b><span>每次都能成功</span></p></div>
+  <div class="ability-note"><p>提出要求、判断结果、<br>发现问题，再把它改好。</p><strong>这些本领，<br>可以慢慢长在自己身上。</strong></div>
+</section>
+<section id="parent-game-page" class="slide lg dark parent game-teaser" data-phase="I" aria-label="游戏：回到软盘年代">
+  <div class="edge-frame"></div><div class="copy"><h2>回到<br>软盘年代。</h2><p class="lead">1990 年代的一张书桌，<br>一台用软盘的电脑。</p><p class="body-copy">插入软盘，输入命令，<br>看看计算机怎样读取<br>已经存好的内容。</p><button id="game-open" type="button" aria-haspopup="dialog" aria-controls="parent-game">打开软盘电脑游戏 <span aria-hidden="true">↗</span></button><p class="game-device-note">请使用电脑、鼠标与键盘体验。</p></div><figure class="floppy-art"><svg class="floppy" viewBox="0 0 600 600" aria-hidden="true">
+    <circle cx="300" cy="300" r="250" fill="none" stroke="rgba(120,216,229,.3)" stroke-width="3"/>
+    <circle cx="300" cy="300" r="190" fill="none" stroke="rgba(255,201,77,.25)" stroke-width="2" stroke-dasharray="8 10"/>
+    <g transform="rotate(-10 300 300)" stroke="#082733" stroke-width="7" stroke-linejoin="round">
+      <rect x="150" y="150" width="300" height="300" rx="18" fill="#00a887"/>
+      <rect x="215" y="150" width="170" height="104" fill="#d9f2ed"/>
+      <rect x="320" y="166" width="40" height="72" fill="#082733" stroke="none"/>
+      <rect x="190" y="300" width="220" height="130" rx="8" fill="#f6f7f1"/>
+      <line x1="215" y1="340" x2="385" y2="340" stroke-width="5" stroke="#435c63"/>
+      <line x1="215" y1="372" x2="345" y2="372" stroke-width="5" stroke="#435c63"/>
+    </g>
+    <text x="300" y="420" text-anchor="middle" transform="rotate(-10 300 300)" font-family="Cascadia Mono, Consolas, monospace" font-weight="800" font-size="34" fill="#082733">A:</text>
+    <circle cx="510" cy="150" r="14" fill="#ffc94d" stroke="#082733" stroke-width="4"/>
+    <circle cx="110" cy="470" r="11" fill="#f26b5e" stroke="#082733" stroke-width="4"/>
+  </svg></figure>
+</section>
+<section class="slide parent transfer" data-phase="T" aria-label="体验：为什么我们不喜欢AI感？">
+  <div class="copy"><h2>为什么我们<br>不喜欢<br>“AI 感”？</h2><p class="lead">一张图，一段话。<br>什么让你觉得“像 AI”？</p><p class="body-copy">这种感觉，从哪里来？</p></div><div class="feel-art" aria-hidden="true"><span class="ghost" data-ghost="AI">AI</span><b>感</b></div>
+</section>
+<section class="slide lg parent" id="lgHomework" data-phase="" aria-label="课外作业：找找身边的 AI 感">
+<style>
+#lgHomework .copy { position: absolute; left: 118px; top: 130px; width: 820px; }
+#lgHomework .display span { color: var(--teal); }
+#lgHomework .steps { margin-top: 54px; list-style: none; padding: 0; }
+#lgHomework .steps li { padding: 18px 0 18px 30px; border-left: 5px solid var(--yellow); margin-bottom: 18px; }
+#lgHomework .steps b { display: block; font-size: 34px; font-weight: 900; letter-spacing: -.02em; }
+#lgHomework .steps span { display: block; margin-top: 6px; font-size: 25px; color: var(--ink-soft); line-height: 1.5; }
+#lgHomework .card { position: absolute; right: 120px; top: 150px; width: 460px; height: 590px; background: #fffdf4; border: 3px solid var(--ink); box-shadow: 10px 12px 0 rgba(8,39,51,.12); transform: rotate(2.5deg); padding: 40px 42px; }
+#lgHomework .card .t { font-size: 32px; font-weight: 900; margin-bottom: 26px; }
+#lgHomework .card .row { display: flex; justify-content: space-between; align-items: center; height: 58px; border-bottom: 2px solid rgba(8,39,51,.12); font-size: 23px; }
+</style>
+  <div class="edge-frame"></div>
+  <div class="copy">
+    <p class="kicker">课外作业 · After Class</p>
+    <h2 class="display">找找身边的<br><span>「AI 感」</span></h2>
+    <ul class="steps">
+      <li><b>找几个生活中的例子</b><span>一张海报、一段视频、一篇文章……你在哪里遇见过？</span></li>
+      <li><b>说说哪里有「AI 感」</b><span>是画面、声音、用词，还是某种说不出的感觉？</span></li>
+      <li><b>聊聊你的感受</b><span>也可以问问其他人：喜欢、不喜欢，还是没什么感觉？</span></li>
+    </ul>
+  </div>
+  <div class="card" aria-hidden="true">
+    <div class="t">我的「AI 感」发现</div>
+    <div class="row"><span>在哪里看到？</span></div>
+    <div class="row"></div>
+    <div class="row"><span>哪里让我觉得像 AI？</span></div>
+    <div class="row"></div>
+    <div class="row"><span>我的感受 / 其他人的感受</span></div>
+    <div class="row"></div>
+    <div class="row"></div>
+  </div>
+</section>
+
+<div class="phase-rail" aria-label="ORBIT 学习轨道"><p></p><span>O</span><span>R</span><span>B</span><span>I</span><span>T</span></div></main>
+<footer class="parent-toolbar"><a href="../">课程目录</a><nav aria-label="课件翻页"><button id="prev" aria-label="上一页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button><span id="counter" aria-live="polite"></span><button id="next" aria-label="下一页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button></nav><div class="tools"><small>© ORBIT AI · 家庭阅读</small><button id="fullscreen" aria-label="全屏观看"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5"/></svg></button></div></footer>
+<dialog id="parent-game" aria-labelledby="parent-game-title"><header class="game-bar"><h2 id="parent-game-title">软盘电脑 · Summer '94</h2><button id="game-close" type="button" autofocus>返回课程 ×</button></header><iframe id="parent-game-frame" data-src="assets/i486-game.html?embed=1" title="软盘电脑游戏" allow="autoplay; clipboard-write" hidden></iframe><div id="game-device-help" class="game-device-help" role="status" hidden><strong>在电脑上，走进这张书桌。</strong><p>这个游戏需要鼠标与键盘。<br>请在电脑上横屏打开本课，体验完整游戏。</p></div></dialog>
+<script>(() => {
+  const stage = document.getElementById('stage');
+  const slides = [...stage.querySelectorAll(':scope > section.slide')];
+  const toolbar = document.querySelector('.parent-toolbar');
+  const rail = document.querySelector('.phase-rail');
+  const prev = document.getElementById('prev'), next = document.getElementById('next');
+  const portrait = matchMedia('(orientation: portrait) and (max-width: 900px)');
+  const pointer = matchMedia('(any-pointer: fine)');
+  const gameDialog = document.getElementById('parent-game');
+  const gameFrame = document.getElementById('parent-game-frame');
+  const gameOpen = document.getElementById('game-open');
+  const gameClose = document.getElementById('game-close');
+  const gameHelp = document.getElementById('game-device-help');
+  const gameOrigin = window.origin || location.origin;
+  const localGameOrigin = location.protocol === 'file:' || gameOrigin === 'null' || gameOrigin === 'file://';
+  const gameTargetOrigin = localGameOrigin ? '*' : gameOrigin;
+  let gameLoaded = false;
+  const names = {O:'Open with a Story',R:'Recognize the Concept',B:'Break Down the Principle',I:'Interact through Play',T:'Transfer into Experience'};
+  let index = 0, touch = null;
+  function fit() {
+    const usable = Math.max(1, innerHeight - toolbar.getBoundingClientRect().height);
+    const scale = Math.min(innerWidth / 1600, usable / 900);
+    stage.style.top = usable / 2 + 'px';
+    stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    gameOpen.style.minHeight = `${44 / scale}px`;
+  }
+  function pause() { document.querySelectorAll('video,audio').forEach(v => v.pause()); }
+  function syncGame(forcePause = false) {
+    if (!gameLoaded) return;
+    gameFrame.contentWindow?.postMessage({channel:'ORBIT_L04_GAME',type:'activity',active:!forcePause && gameDialog.open && !document.hidden && !portrait.matches && pointer.matches},gameTargetOrigin);
+  }
+  function updateGameView() {
+    const playable = pointer.matches && !portrait.matches;
+    gameFrame.hidden = !playable;
+    gameHelp.hidden = playable;
+    if (playable && !gameLoaded) {
+      gameLoaded = true;
+      gameFrame.src = gameFrame.dataset.src;
+    }
+    syncGame();
+  }
+  gameOpen.addEventListener('click',()=>{
+    pause();
+    gameDialog.showModal();
+    updateGameView();
+    gameClose.focus();
+  });
+  gameClose.addEventListener('click',()=>gameDialog.close());
+  gameDialog.addEventListener('cancel',e=>e.preventDefault()); // Esc belongs to DOS and the game.
+  gameDialog.addEventListener('close',()=>{
+    syncGame(true);
+    if(slides[index].id==='parent-game-page') gameOpen.focus({preventScroll:true});
+  });
+  gameFrame.addEventListener('load',()=>syncGame());
+  window.addEventListener('message',e=>{
+    if(e.source!==gameFrame.contentWindow) return;
+    if(localGameOrigin ? !['null','file://'].includes(e.origin) : e.origin!==gameOrigin) return;
+    if(e.data?.channel==='ORBIT_L04_GAME' && e.data.type==='ready') syncGame();
+  });
+  pointer.addEventListener('change',()=>{if(gameDialog.open)updateGameView();});
+  function show(n, hash = true) {
+    index = Math.max(0,Math.min(slides.length-1,n));
+    if(gameDialog.open && slides[index].id!=='parent-game-page') {
+      syncGame(true);
+      gameDialog.close();
+    }
+    slides.forEach((slide,i) => {
+      slide.classList.toggle('active',i===index);
+      slide.setAttribute('aria-hidden',String(i!==index));
+      slide.inert = i!==index;
+      if(i!==index) slide.querySelectorAll('video,audio').forEach(v => v.pause());
+    });
+    const current=slides[index],phase=current.dataset.phase;
+    document.body.classList.toggle('on-lg',current.classList.contains('lg'));
+    rail.hidden=!phase;
+    rail.querySelector('p').textContent=names[phase]||'';
+    rail.querySelectorAll('span').forEach(v=>v.classList.toggle('active',v.textContent===phase));
+    document.getElementById('counter').textContent=String(index+1).padStart(2,'0')+' / '+slides.length;
+    prev.disabled=index===0;next.disabled=index===slides.length-1;
+    if(hash) history.replaceState(null,'','#slide-'+(index+1));
+  }
+  function fromHash(){const m=location.hash.match(/^#slide-(\d+)$/);show(m?Number(m[1])-1:0,false);}
+  prev.addEventListener('click',()=>show(index-1));next.addEventListener('click',()=>show(index+1));
+  window.addEventListener('hashchange',fromHash);window.addEventListener('resize',fit);
+  window.visualViewport?.addEventListener('resize',fit);
+  document.addEventListener('keydown',e=>{
+    if(gameDialog.open)return;
+    if(e.target.closest?.('video,a,button,input,textarea,select,[contenteditable]'))return;
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(index+1);}
+    if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(index-1);}
+    if(e.key==='Home')show(0);if(e.key==='End')show(slides.length-1);
+  });
+  stage.addEventListener('touchstart',e=>{
+    if(e.target.closest('video,a,button,input,textarea,select')){touch=null;return;}
+    const p=e.changedTouches[0];touch={x:p.clientX,y:p.clientY};
+  },{passive:true});
+  stage.addEventListener('touchend',e=>{
+    if(!touch)return;const p=e.changedTouches[0],dx=p.clientX-touch.x,dy=p.clientY-touch.y;touch=null;
+    if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.3)show(index+(dx<0?1:-1));
+  },{passive:true});
+  const fs=document.getElementById('fullscreen');
+  if(!document.documentElement.requestFullscreen)fs.hidden=true;
+  fs.addEventListener('click',()=>{const p=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();p?.catch?.(()=>{});});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();syncGame();});
+  window.addEventListener('pagehide',()=>{pause();syncGame(true);});
+  window.addEventListener('pageshow',()=>syncGame());
+  portrait.addEventListener('change',()=>{if(portrait.matches)pause();if(gameDialog.open)updateGameView();fit();});
+  const editable=t=>t instanceof Element&&(!!t.closest('input,textarea')||t.isContentEditable);
+  ['copy','cut','selectstart','dragstart'].forEach(type=>document.addEventListener(type,e=>{if(!editable(e.target))e.preventDefault();}));
+  fromHash();fit();
+})();
+</script></body></html>
